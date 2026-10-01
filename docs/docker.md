@@ -8,10 +8,10 @@
 
 ## 获取代码和镜像
 
-在有仓库访问权限的账号下执行：
+获取部署文件：
 
 ```sh
-gh repo clone qiuyuxc/kukie-platform
+git clone https://github.com/qiuyuxc/kukie-platform.git
 cd kukie-platform/deploy
 cp .env.example .env
 chmod 600 .env
@@ -30,18 +30,24 @@ KUKIE_INDEXNOW_KEY=
 
 把示例后台和 API 域名改成自己的域名。`KUKIE_SITE_HOST` 必须等于 `KUKIE_SITE_URL` 中的主机名，不带协议或路径。
 
-拉取私有镜像需要有该包访问权限的 GitHub 账号，以及含 `read:packages` 权限的经典个人访问令牌。通过标准输入登录，不把令牌放进命令历史或配置文件：
+公开镜像不需要登录，直接检查配置并启动：
+
+```sh
+docker compose config --quiet
+docker compose pull
+docker compose up -d
+docker compose ps
+docker compose logs --tail=80 kukie caddy
+```
+
+如果自行限制了镜像访问权限，才需要有该包访问权限的 GitHub 账号和含 `read:packages` 权限的经典个人访问令牌。先通过标准输入登录，再执行拉取命令，不把令牌放进命令历史或配置文件：
 
 ```sh
 read -r -s -p 'GHCR token: ' GHCR_TOKEN
 printf '\n'
 printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 unset GHCR_TOKEN
-docker compose config --quiet
 docker compose pull
-docker compose up -d
-docker compose ps
-docker compose logs --tail=80 kukie caddy
 ```
 
 `read -s -p` 示例使用 Bash。Docker 会按本机凭据存储配置保存登录信息，请限制服务器账号访问权限。
