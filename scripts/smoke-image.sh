@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 image=${1:?Pass the built image name}
+test "$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$image")" = linux/amd64
 name="kukie-smoke-$$"
 volume="$name-data"
 cleanup() {

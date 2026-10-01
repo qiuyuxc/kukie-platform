@@ -2,6 +2,7 @@ name: kukie
 services:
   kukie:
     image: ${KUKIE_IMAGE:-ghcr.io/qiuyuxc/kukie-platform:latest}
+    platform: linux/amd64
     restart: unless-stopped
     environment:
       KUKIE_SITE_URL: ${KUKIE_SITE_URL:?Set KUKIE_SITE_URL to the origin used when building}

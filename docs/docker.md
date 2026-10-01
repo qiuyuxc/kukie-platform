@@ -2,7 +2,7 @@
 
 ## 准备
 
-服务器需要 Docker Engine 与 Compose 插件，支持 `docker compose` 命令。建议先在测试服务器验证。准备网站、后台、API 三个域名，将 DNS 指向服务器，放行 TCP 80/443；HTTP/3 可额外放行 UDP 443。不要将 8084、8085、8086 暴露到公网。
+服务器使用 AMD64（x86_64）架构，需要 Docker Engine 与 Compose 插件，支持 `docker compose` 命令。建议先在测试服务器验证。准备网站、后台、API 三个域名，将 DNS 指向服务器，放行 TCP 80/443；HTTP/3 可额外放行 UDP 443。不要将 8084、8085、8086 暴露到公网。
 
 镜像构建时嵌入网站域名。默认值是 `https://www.kukie.cn`，部署时 `KUKIE_SITE_URL` 必须一致。后台和 API 域名只在部署配置中设置。
 
@@ -108,7 +108,7 @@ docker run --rm -v kukie_restore:/data -v "$PWD/backups:/backup:ro" \
 
 1. 执行 Go 全量测试、race 检查和 `go vet`。
 2. 构建镜像，启动独立临时容器，检查网站、后台、接口隔离和重启持久化。
-3. 验证通过后向 GHCR 发布 `linux/amd64` 与 `linux/arm64` 镜像。
+3. 验证通过后向 GHCR 发布 `linux/amd64` 镜像。
 
 主分支发布 `latest` 与 `sha-完整提交号`，`v*` 标签发布同名镜像标签。PR 只测试和构建，不推送镜像。工作流使用 `GITHUB_TOKEN` 的 `packages: write` 权限，不需要把个人令牌放到 Actions secrets 中。发布不包含 SSH 或自动上线步骤。
 
@@ -117,7 +117,7 @@ docker run --rm -v kukie_restore:/data -v "$PWD/backups:/backup:ro" \
 也可自行构建：
 
 ```sh
-docker build --build-arg KUKIE_SITE_URL=https://blog.example.com -t kukie:local .
+docker build --platform linux/amd64 --build-arg KUKIE_SITE_URL=https://blog.example.com -t kukie:local .
 ```
 
 上述命令在仓库根目录执行；然后将 `deploy/.env` 的 `KUKIE_IMAGE` 改为 `kukie:local`，用 `docker compose up -d` 启动，不对本地镜像执行 pull。

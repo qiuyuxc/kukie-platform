@@ -1,21 +1,20 @@
-FROM --platform=$BUILDPLATFORM node:24-bookworm-slim AS console
+FROM node:24-bookworm-slim AS console
 WORKDIR /build/apps/console
 COPY apps/console/package.json apps/console/package-lock.json ./
 RUN npm ci
 COPY apps/console/ ./
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM node:24-bookworm-slim AS site
-ARG BUILDARCH
+FROM node:24-bookworm-slim AS site
 ARG KUKIE_SITE_URL=https://www.kukie.cn
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /tmp/hugo
 RUN curl -fsSLO https://github.com/gohugoio/hugo/releases/download/v0.167.0/hugo_0.167.0_checksums.txt \
     && echo '3e660936247093840181ea5e0af5be3772e2f0c7720d6ce9e9645a12ab7531ec  hugo_0.167.0_checksums.txt' | sha256sum -c - \
-    && curl -fsSLO "https://github.com/gohugoio/hugo/releases/download/v0.167.0/hugo_extended_0.167.0_linux-${BUILDARCH}.tar.gz" \
-    && grep " hugo_extended_0.167.0_linux-${BUILDARCH}.tar.gz$" hugo_0.167.0_checksums.txt | sha256sum -c - \
-    && tar -xzf "hugo_extended_0.167.0_linux-${BUILDARCH}.tar.gz" -C /usr/local/bin hugo
+    && curl -fsSLO https://github.com/gohugoio/hugo/releases/download/v0.167.0/hugo_extended_0.167.0_linux-amd64.tar.gz \
+    && grep ' hugo_extended_0.167.0_linux-amd64.tar.gz$' hugo_0.167.0_checksums.txt | sha256sum -c - \
+    && tar -xzf hugo_extended_0.167.0_linux-amd64.tar.gz -C /usr/local/bin hugo
 WORKDIR /build
 COPY hugo.toml hugo.server.toml ./
 COPY archetypes/ archetypes/
@@ -29,16 +28,12 @@ COPY apps/site/ apps/site/
 COPY scripts/site.mjs scripts/site.mjs
 RUN KUKIE_SITE_URL="$KUKIE_SITE_URL" KUKIE_SITE_OUTPUT=/site node scripts/site.mjs
 
-FROM --platform=$BUILDPLATFORM golang:1.26-bookworm AS api
-ARG TARGETARCH
-RUN apt-get update && apt-get install -y --no-install-recommends gcc-aarch64-linux-gnu gcc-x86-64-linux-gnu \
-    && rm -rf /var/lib/apt/lists/*
+FROM golang:1.26-bookworm AS api
 WORKDIR /build
 COPY services/api/go.mod services/api/go.sum ./
 RUN go mod download
 COPY services/api/ ./
-RUN case "$TARGETARCH" in amd64) compiler=x86_64-linux-gnu-gcc ;; arm64) compiler=aarch64-linux-gnu-gcc ;; *) exit 1 ;; esac \
-    && CGO_ENABLED=1 GOOS=linux GOARCH="$TARGETARCH" CC="$compiler" go build -trimpath -ldflags='-s -w' -o /kukie-api .
+RUN CGO_ENABLED=1 go build -trimpath -ldflags='-s -w' -o /kukie-api .
 
 FROM debian:bookworm-slim AS runtime
 ARG KUKIE_SITE_URL=https://www.kukie.cn

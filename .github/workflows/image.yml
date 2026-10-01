@@ -37,7 +37,6 @@ jobs:
       SITE_URL: ${{ vars.KUKIE_SITE_URL || 'https://www.kukie.cn' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - name: Image names
         id: names
@@ -75,14 +74,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish both architectures
+      - name: Publish AMD64 image
         if: github.event_name != 'pull_request'
         id: publish
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ steps.names.outputs.tags }}
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
           build-args: KUKIE_SITE_URL=${{ env.SITE_URL }}

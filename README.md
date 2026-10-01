@@ -12,7 +12,7 @@
 
 推荐使用 Docker Compose。完整步骤见 [Docker 部署](docs/docker.md)，包括 HTTPS、初始化、备份、升级和回滚。
 
-镜像：`ghcr.io/qiuyuxc/kukie-platform`，支持 `linux/amd64` 与 `linux/arm64`。默认构建域名为 `https://www.kukie.cn`；更换域名需重新构建镜像，不能只改运行时变量。
+镜像：`ghcr.io/qiuyuxc/kukie-platform`，仅支持 `linux/amd64`（x86_64）。默认构建域名为 `https://www.kukie.cn`；更换域名需重新构建镜像，不能只改运行时变量。
 
 GitHub Actions 在主分支推送后执行测试、镜像运行检查并发布镜像。构建不会自动重启生产服务器，部署者自行选择升级时间。
 
