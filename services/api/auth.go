@@ -165,7 +165,7 @@ func (app *server) auth(next authenticated, admin bool) http.HandlerFunc {
 			return
 		}
 		if cookieAuth && request.Method != "GET" && request.Method != "HEAD" {
-			if !app.origins[request.Header.Get("Origin")] || subtle.ConstantTimeCompare([]byte(request.Header.Get("X-CSRF-Token")), []byte(app.keyed("csrf:"+token))) != 1 {
+			if !app.allowedOrigin(request) || subtle.ConstantTimeCompare([]byte(request.Header.Get("X-CSRF-Token")), []byte(app.keyed("csrf:"+token))) != 1 {
 				fail(writer, 403, "csrf_failed", "请求验证失败，请刷新页面")
 				return
 			}

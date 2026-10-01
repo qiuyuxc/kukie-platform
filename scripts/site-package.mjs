@@ -24,6 +24,7 @@ await cp(resolve(repository, 'content/posts'), resolve(release, 'content/posts')
 await cp(resolve(repository, 'static'), resolve(release, 'static'), { recursive: true });
 await cp(resolve(repository, 'deploy/go-site'), resolve(release, 'deploy'), { recursive: true });
 await cp(resolve(repository, 'docs/go-site.md'), resolve(release, 'README.md'));
+await cp(resolve(repository, 'docs'), resolve(release, 'docs'), { recursive: true });
 await writeFile(resolve(release, 'build.json'), JSON.stringify({ built_at: new Date().toISOString(), site_url: process.env.KUKIE_SITE_URL, platform: process.platform, architecture: process.arch }, null, 2) + '\n');
 await run('tar', ['-czf', release + '.tar.gz', '-C', dirname(release), basename(release)]);
 console.log(`Release: ${release}\nArchive: ${release}.tar.gz\nBuilt for this host. No database, credentials, or live binaries were copied.`);

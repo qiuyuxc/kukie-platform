@@ -300,13 +300,13 @@ func (app *server) middleware(next http.Handler) http.Handler {
 		writer.Header().Set("X-Content-Type-Options", "nosniff")
 		writer.Header().Set("Referrer-Policy", "no-referrer")
 		origin := request.Header.Get("Origin")
-		if origin != "" && app.origins[origin] {
+		if origin != "" && app.allowedOrigin(request) {
 			writer.Header().Set("Access-Control-Allow-Origin", origin)
 			writer.Header().Set("Access-Control-Allow-Credentials", "true")
 			writer.Header().Set("Vary", "Origin")
 		}
 		if request.Method == "OPTIONS" {
-			if !app.origins[origin] {
+			if !app.allowedOrigin(request) {
 				fail(writer, 403, "origin_denied", "不允许此来源")
 				return
 			}
@@ -315,7 +315,7 @@ func (app *server) middleware(next http.Handler) http.Handler {
 			writer.WriteHeader(204)
 			return
 		}
-		if request.Method != "GET" && request.Method != "HEAD" && origin != "" && !app.origins[origin] {
+		if request.Method != "GET" && request.Method != "HEAD" && origin != "" && !app.allowedOrigin(request) {
 			fail(writer, 403, "origin_denied", "不允许此来源")
 			return
 		}

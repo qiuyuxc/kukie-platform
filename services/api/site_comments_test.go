@@ -30,6 +30,28 @@ func TestSiteCommentsShareAPIAndEscapeHTML(test *testing.T) {
 	}
 }
 
+func TestSiteOriginCannotReadConsoleSession(test *testing.T) {
+	fixture := siteFixture(test)
+	request := httptest.NewRequest("GET", "/api/v1/me", nil)
+	request.AddCookie(&http.Cookie{Name: "kukie_session", Value: fixture.adminToken})
+	request.Header.Set("Origin", "https://blog.example.test")
+	response := httptest.NewRecorder()
+	fixture.app.consoleHandler().ServeHTTP(response, request)
+	if response.Header().Get("Access-Control-Allow-Origin") != "" {
+		test.Fatal("public site origin can read the console session across origins")
+	}
+	request = httptest.NewRequest("POST", "/api/v1/auth/logout", strings.NewReader(`{}`))
+	request.AddCookie(&http.Cookie{Name: "kukie_session", Value: fixture.adminToken})
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Origin", "https://blog.example.test")
+	request.Header.Set("X-CSRF-Token", fixture.app.keyed("csrf:"+fixture.adminToken))
+	response = httptest.NewRecorder()
+	fixture.app.consoleHandler().ServeHTTP(response, request)
+	if response.Code != 403 {
+		test.Fatal("public site origin can mutate console sessions")
+	}
+}
+
 func TestSiteCommentCookieAuthAndBoundary(test *testing.T) {
 	fixture := siteFixture(test)
 	handler := fixture.app.siteHandler()

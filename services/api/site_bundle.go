@@ -144,7 +144,6 @@ func (app *server) loadSite(directory, baseURL string) error {
 		return err
 	}
 	app.site = site
-	app.origins[origin] = true
 	success = true
 	return nil
 }

@@ -37,3 +37,4 @@
 .kukie-comment-meta time{opacity:.7;font-size:.8rem}
 .kukie-comment-meta span{border:1px solid currentColor;border-radius:4px;padding:0 5px;font-size:.75rem}
 .kukie-comment-list p{white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 0}
+@media(prefers-reduced-motion:reduce){.kukie-comments button{transition:none}}
