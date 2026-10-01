@@ -1,0 +1,24 @@
+{{- if partial "effects-enabled.html" . -}}
+{{- $fx := .Site.Params.effects | default dict -}}
+{{- $script := default "/vendor/yzhanweather/yzhanweather.min.js" $fx.script -}}
+<script type="application/json" id="sakura-site-effects-config">{{ dict
+  "type" (default "sakura" $fx.type)
+  "maxDuration" (default 10 $fx.maxDuration)
+  "zIndex" (default 5 $fx.zIndex)
+  "script" ($script | relURL)
+  "randomTypes" (default (slice "sakura" "rain" "snow" "firefly" "butterfly") $fx.randomTypes)
+  "randomize" (default true $fx.randomize)
+  "mobile" (default false $fx.mobile)
+| jsonify | safeJS }}</script>
+<script>
+(function () {
+  var el = document.getElementById('sakura-site-effects-config')
+  if (!el?.textContent) return
+  try {
+    var raw = JSON.parse(el.textContent)
+    if (typeof raw === 'string') raw = JSON.parse(raw)
+    document.documentElement.dataset.sakuraEffectsMobile = raw.mobile ? '1' : '0'
+  } catch {}
+})()
+</script>
+{{- end -}}

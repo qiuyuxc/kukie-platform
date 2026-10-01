@@ -1,0 +1,5 @@
+{{- $g1items := .Scratch.Get "footerLinksG1" | default slice -}}
+{{- $g2items := .Scratch.Get "footerLinksG2" | default slice -}}
+{{- if or $g1items $g2items -}}
+<script type="application/json" id="footer-links-data">{{ dict "group1" $g1items "group2" $g2items | jsonify }}</script>
+{{- end -}}

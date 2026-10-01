@@ -1,0 +1,57 @@
+<section class="friend-link-notice">
+  <header class="friend-link-notice__header">
+    <h2 class="friend-link-notice__title">
+      <span class="friend-link-notice__title-icon" aria-hidden="true">✦</span>
+      加入本站友链方式
+    </h2>
+    <p class="friend-link-notice__subtitle">参照以下格式留言即可</p>
+  </header>
+
+  <textarea id="yml-template" hidden readonly>- name: #站点名称
+  link: #站点链接
+  avatar: #站长头像
+  descr: #站点描述
+  siteshot: #站点截图</textarea>
+
+  <div class="friend-link-code">
+    <div class="friend-link-code__bar">
+      <div class="friend-link-code__dots" aria-hidden="true">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+      </div>
+      <span class="friend-link-code__lang">YML</span>
+      <button type="button" class="friend-link-code__copy" id="copy-yml-btn" title="复制代码" aria-label="复制代码">📋</button>
+    </div>
+
+    <pre class="friend-link-code__body"><code><span class="friend-link-code__line"><span class="friend-link-code__ln">1</span><span class="friend-link-code__text">- name: #站点名称</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">2</span><span class="friend-link-code__text">  link: #站点链接</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">3</span><span class="friend-link-code__text">  avatar: #站长头像</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">4</span><span class="friend-link-code__text">  descr: #站点描述</span></span><span class="friend-link-code__line"><span class="friend-link-code__ln">5</span><span class="friend-link-code__text">  siteshot: #站点截图</span></span></code></pre>
+
+    <span class="friend-link-code__cat" aria-hidden="true">🐱</span>
+  </div>
+
+  <div class="friend-link-rules">
+    <span class="friend-link-rules__plus" aria-hidden="true">+</span>
+
+    <ul class="friend-link-rules__list">
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🎉</span><span>本站支持交换友链，在您提出申请之前，请将本站添加到友链</span></li>
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🍵</span><span>为了保障本站用户，本站仅支持个人网站的友链申请</span></li>
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">💡</span><span>申请本站友链需要拥有独立域名（非免费域名），建议开启全站 HTTPS</span></li>
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">⌛</span><span>如果友情链接已经添加，请保持网站的正常访问，会定期清理僵尸网站</span></li>
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">🐚</span><span>网站有一定的实质性内容和主题，不能是空壳网站和练手网站</span></li>
+      <li class="friend-link-rules__item"><span class="friend-link-rules__icon">💕</span><span>感谢您对本站的支持，如果您已经满足上述要求，请在下方表单提交友链申请~~~</span></li>
+    </ul>
+
+    <div class="friend-link-site-info">
+      <p class="friend-link-site-info__title">
+        <span aria-hidden="true">📍</span>
+        本站友链信息如下：
+      </p>
+      <ul class="friend-link-site-info__list">
+        <li>站点名称：<span class="friend-link-highlight">{{ .Site.Title }}</span></li>
+        <li>站点链接：<span class="friend-link-highlight">{{ .Site.BaseURL }}</span></li>
+        <li>站长头像：<span class="friend-link-highlight">https://q2.qlogo.cn/headimg_dl?dst_uin=1830998274&amp;spec=0</span></li>
+        <li>站点描述：<span class="friend-link-highlight">记录个人随笔与技术实践的独立站点，主要分享折腾过程中的想法与经验。</span></li>
+      </ul>
+    </div>
+  </div>
+</section>

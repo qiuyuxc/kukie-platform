@@ -1,0 +1,16 @@
+/.local/
+/public/
+/resources/_gen/
+/.hugo_build.lock
+node_modules/
+/apps/console/dist/
+.env
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
+.DS_Store
+master.key
+setup-token

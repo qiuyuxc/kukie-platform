@@ -1,0 +1,143 @@
+---
+title: Vercel / Netlify / Cloudflare 站点的优选与分流
+date: 2025-12-19T00:00:00+08:00
+description: 通过华为云 DNS 线路解析，对 Vercel、Netlify、Cloudflare 等平台进行优选与分流，提升不同运营商环境下的访问体验。
+cover: /img/covers/cdn-routing.webp
+aliases:
+  - /p/cdn-routing/
+categories:
+    - CDN
+tags:
+    - CDN
+    - Cloudflare
+    - Vercel
+    - Netlify
+---
+
+## 前言
+
+如果你的网站部署在 Vercel、Netlify 或 Cloudflare 等平台上，实际访问体验往往会受到网络环境和运营商线路的影响。
+
+这篇文章主要介绍一种比较实用的方案：借助 **华为云 DNS 的线路解析功能**，结合第三方优选域名，对不同平台进行优选与分流。这样可以让不同运营商用户访问到更合适的线路，从而改善站点的访问速度。
+
+## 需要准备的账号
+
+在开始之前，需要先准备以下账号：
+
+1. [GitHub](https://github.com "GitHub")
+2. [Cloudflare](https://www.cloudflare.com "Cloudflare")
+3. [Vercel](https://vercel.com "Vercel")
+4. [Netlify](https://www.netlify.com "Netlify")
+5. [华为云](https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fconsole-intl.huaweicloud.com%2Fdns%2F%3FagencyId%3Df03fc6c78ad640679dce46d3caa233b9%26region%3Dap-southeast-1%26locale%3Dzh-cn%26cloud_route_state%3D%2Fdns%2Fdashboard&locale=zh-cn#/login "华为云")
+
+## 第一步：在华为云添加需要优选的子域名
+
+假设你最终要访问的站点是 `blog.hwy.com`，那么在华为云 DNS 中添加对应的子域名即可。
+
+添加完成后，华为云会提供一组 NS 记录。接下来需要前往 Cloudflare，将这组 NS 记录配置进去，把该子域名的解析权交给华为云。
+
+![](https://cdn.kukie.cn/blog/7770.webp)
+
+这样后续针对这个子域名的优选与分流，就可以在华为云里完成。
+
+## 第二步：配置平台域名并进行优选
+
+这里以 **Vercel** 为例说明。
+
+首先，在 Vercel 中添加你的子域名，例如：
+
+`blog.hwy.com`
+
+完成添加后，Vercel 会给出默认的解析记录。先按平台要求正常完成解析与生效。
+
+![](https://cdn.kukie.cn/blog/7771.webp)
+
+待域名绑定成功后，就可以把原本平台提供的默认解析目标，替换为社区中常见的第三方优选域名，以进一步改善访问质量。
+
+### 第三方优选域名获取
+
+常见的第三方优选域名可以从下面这些站点获取：
+
+```txt
+https://cf.090227.xyz/
+https://www.byoip.top/
+```
+
+拿到优选域名之后，将原解析值替换为对应的优选域名或IP即可。
+
+### 测试优选是否生效
+
+替换完成后，可以通过测试工具或实际访问下，验证当前优选域名是否已经生效。
+
+![](https://cdn.kukie.cn/blog/7772.webp)
+
+## 第三步：按运营商进行分流
+
+如果你只使用单个平台，那么完成前面的优选步骤通常就已经够用了。
+分流并不是必须项。
+
+但如果你希望进一步优化不同网络环境下的访问体验，比如让电信、联通、移动分别走不同平台，那么就可以继续往下配置线路分流。
+
+### 配置思路
+
+重复前面在 Vercel 上的做法，再为 Netlify、Cloudflare 或其他平台分别完成：
+
+- 域名绑定
+- 解析生效
+- SSL 下发
+- 替换为对应优选域名
+
+等这些都准备好之后，就可以在华为云中基于运营商线路添加不同的解析记录。
+
+> 注：如果 Netlify 长时间无法完成解析，可以先在华为云中暂停其他优选记录，等待 Netlify 验证成功后再重新启用。
+
+## 第四步：配置线路解析
+
+假设你已经分别为 Vercel、Netlify、Cloudflare 等平台准备好了对应的优选域名，那么接下来就可以根据不同运营商进行分流。
+
+例如，以电信线路为例：
+
+![](https://cdn.kukie.cn/blog/7773.webp)
+
+同样的方法，也可以继续为联通、移动等线路分别配置不同的 CNAME 记录。具体选哪一个平台作为哪条线路的目标，可以根据你自己的测试结果和访问体验来决定。
+
+## 解析示例
+
+以下只是一个示例，具体请以你自己的实际配置为准：
+
+- 记录类型：CNAME ｜ 线路：电信 ｜ 记录值：`your.cloudflare.app`
+- 记录类型：CNAME ｜ 线路：移动 ｜ 记录值：`your.vercel.app`
+- 记录类型：CNAME ｜ 线路：联通 ｜ 记录值：`your.netlify.app`
+- 记录类型：CNAME ｜ 线路：全网默认 ｜ 记录值：`your.edgeone.app`
+
+配置完成后，可以再次进行测试，确认各线路是否已经正确指向正确IP。
+
+![](https://cdn.kukie.cn/blog/77711.webp)
+
+## 一个有趣的延伸玩法
+
+线路分流除了用于优化访问速度，其实还可以拿来做一些更有意思的玩法。
+
+比如：
+
+- 电信线路访问部署在 Vercel 上的云盘
+- 联通线路访问部署在 Netlify 上的博客
+- 移动线路访问另外一个平台上的站点内容
+
+也就是说，不同网络环境下访问同一个域名，看到的内容甚至可以不完全相同。
+
+当然，这种玩法更偏个性化和实验性质，是否这样使用就看你自己的需求了。
+
+## 总结
+
+这套方案的核心思路并不复杂：
+
+1. 把子域名交给华为云解析
+2. 在不同平台上完成域名绑定
+3. 将默认解析替换为第三方优选域名
+4. 利用华为云的线路解析能力，为不同运营商配置不同的访问目标
+
+如果你只是想做基础优选，那么做到第三步通常就已经够用了。
+如果你还想进一步折腾，或者希望兼顾不同网络环境下的访问体验，那么再继续做分流会更合适。
+
+整体来说，这是一套比较适合多平台部署场景的方案。

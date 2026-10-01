@@ -1,0 +1,5 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.links "rssenable" -}}
+  {{- $enabled = site.Params.links.rssenable -}}
+{{- end -}}
+{{- return $enabled -}}

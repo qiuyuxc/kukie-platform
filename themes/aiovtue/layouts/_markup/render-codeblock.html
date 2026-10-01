@@ -1,0 +1,18 @@
+{{- $lang := .Type | default "text" -}}
+{{- if eq $lang "" -}}
+  {{- $lang = "text" -}}
+{{- end -}}
+{{- $inner := .Inner -}}
+{{- $lines := split $inner "\n" -}}
+{{- $lineCount := len $lines -}}
+{{- if and (gt $lineCount 0) (eq (index $lines (sub $lineCount 1)) "") -}}
+  {{- $lineCount = sub $lineCount 1 -}}
+{{- end -}}
+{{- $fold := gt $lineCount 10 -}}
+{{- $highlighted := transform.Highlight $inner $lang -}}
+<div class="language-{{ $lang }}{{ if $fold }} max-h-360px code-foldable folded{{ end }}" data-line-count="{{ $lineCount }}">
+  <button type="button" title="Copy code" class="copy" aria-label="复制代码"></button>
+  <span class="lang">{{ $lang }}</span>
+  {{ $highlighted }}
+  <button type="button" class="code-block-unfold-btn" aria-label="展开代码"{{ if not $fold }} hidden{{ end }}></button>
+</div>

@@ -1,0 +1,5 @@
+{{- $file := resources.Get .name -}}
+{{- if $file -}}
+{{- $css := $file | css.Sass | minify | fingerprint -}}
+<link rel="stylesheet" data-sakura-page-style="{{ .key }}" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{- end -}}

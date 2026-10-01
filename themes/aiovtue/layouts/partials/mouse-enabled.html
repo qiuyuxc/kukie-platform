@@ -1,0 +1,8 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.mouse "enable" -}}
+  {{- $enabled = site.Params.mouse.enable -}}
+{{- end -}}
+{{- if isset .Params "mouse" -}}
+  {{- $enabled = .Params.mouse -}}
+{{- end -}}
+{{- return $enabled -}}

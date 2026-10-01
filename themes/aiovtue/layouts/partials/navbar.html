@@ -1,0 +1,59 @@
+<header
+  class="sakura-navbar"
+  id="navbar"{{ partial "navbar-collapse-attrs.html" . | safeHTMLAttr }}>
+  <div class="navbar-content sakura-safe-padding" id="navbar-content">
+    <div class="sakura-navbar__brand-wrap">
+      <button type="button" class="mobile-btn sakura-navbar__menu-btn" id="sidebar-toggle" aria-label="mobile navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="sakura-navbar-brand">
+        <ruby class="navbar-title relative">
+          <a class="logo-link" href="{{ `/` | relLangURL }}" title="{{ .Site.Title }}-{{ .Site.Params.subtitle }}">
+            {{ range $i, $part := .Site.Params.navbar.titleParts }}
+            <span{{ if eq $i 1 }} class="sakura-hvr-rotate" id="navbar-brand-rotate"{{ end }}>{{ $part }}</span>
+            {{ end }}
+          </a>
+          <rt class="navbar-subtitle">{{ .Site.Params.navbar.subTitle }}</rt>
+        </ruby>
+      </div>
+    </div>
+
+    <nav class="sakura-navbar-link" id="navbar-links" aria-label="主导航">
+      {{ range .Site.Params.menu.main }}
+      <div class="sakura-dropdown sakura-navbar-link-item"{{ if .items }} aria-haspopup="true" aria-expanded="false"{{ end }}>
+        <a class="sakura-nav-link" href="{{ .url | relLangURL }}" data-nav="{{ .url }}"{{ with .navGroup }} data-nav-group="{{ . }}"{{ end }}>
+          {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="sakura-nav-link-icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+          <span class="sakura-nav-link-text">{{ .name }}</span>
+        </a>
+        {{ with .items }}
+        <div class="sakura-dropdown-menu">
+          <div class="sakura-dropdown-list">
+            {{ range . }}
+            <a class="sakura-nav-link" href="{{ .url | relLangURL }}" data-nav="{{ .url }}">
+              {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="sakura-nav-link-icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+              <span class="sakura-nav-link-text">{{ .name }}</span>
+            </a>
+            {{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+    </nav>
+
+    <div class="sakura-navbar-tools">
+      <button type="button" class="sakura-icon-btn sakura-navbar-tool" id="theme-toggle" aria-label="切换主题">
+        <iconify-icon icon="ri:moon-line"></iconify-icon>
+      </button>
+      <button type="button" class="sakura-icon-btn sakura-navbar-tool sakura-search-btn" id="search-open" aria-label="搜索" aria-expanded="false">
+        <span class="search-toggle-icon" aria-hidden="true">
+          <iconify-icon class="search-toggle-icon__search" icon="ri:search-line"></iconify-icon>
+          <iconify-icon class="search-toggle-icon__close" icon="ri:close-line"></iconify-icon>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+{{ partial "sidebar.html" . }}

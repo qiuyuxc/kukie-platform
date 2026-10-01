@@ -1,0 +1,8 @@
+{{- $indent := true -}}
+{{- if isset site.Params "postindent" -}}
+  {{- $indent = site.Params.postindent -}}
+{{- end -}}
+{{- if isset .Params "indent" -}}
+  {{- $indent = .Params.indent -}}
+{{- end -}}
+{{- if $indent }} sakura-text-indent{{ end -}}

@@ -1,0 +1,13 @@
+{{- $page := . -}}
+{{- $raw := $page.RawContent -}}
+{{- $photos := slice -}}
+{{- $text := $raw -}}
+{{- range findRE `\!\[[^\]]*\]\([^)]+\)` $raw -}}
+  {{- $url := replaceRE `\!\[[^\]]*\]\(([^)]+)\)` "$1" . | strings.TrimSpace -}}
+  {{- if $url -}}
+    {{- $photos = $photos | append (dict "url" $url "caption" "") -}}
+  {{- end -}}
+  {{- $text = replace $text . "" 1 -}}
+{{- end -}}
+{{- $text = $text | replaceRE `\n{3,}` "\n\n" | strings.TrimSpace -}}
+{{- return dict "text" $text "photos" $photos -}}

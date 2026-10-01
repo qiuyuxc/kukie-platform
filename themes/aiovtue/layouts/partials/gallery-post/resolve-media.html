@@ -1,0 +1,17 @@
+{{- $page := .page -}}
+{{- $url := strings.TrimSpace .url -}}
+{{- $src := $url -}}
+{{- $lower := lower $src -}}
+{{- $isVideo := or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg") -}}
+{{- $parsed := urls.Parse $src -}}
+{{- with $page.Resources.GetMatch (printf "**/%s" $parsed.Path) -}}
+  {{- $src = .RelPermalink -}}
+{{- else -}}
+  {{- if not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//")) -}}
+    {{- if not (hasPrefix $src "/") -}}
+      {{- $src = printf "/%s" $src -}}
+    {{- end -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "src" $src "isVideo" $isVideo -}}

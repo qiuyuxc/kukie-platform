@@ -1,0 +1,12 @@
+// 由 head.html 经 ExecuteAsTemplate 注入 hugo.toml 中的 primaryColor
+$primary: {{ .Site.Params.primaryColor | default "#DF9193" }};
+
+:root {
+  --va-c-primary: #{$primary};
+  --va-c-primary-rgb: #{red($primary)}, #{green($primary)}, #{blue($primary)};
+  --va-c-primary-light: #{lighten($primary, 5%)};
+  --va-c-primary-lighter: #{lighten($primary, 10%)};
+  --va-c-primary-dark: #{darken($primary, 8%)};
+  --va-c-brand: var(--va-c-primary);
+  --va-c-link: var(--va-c-primary-dark);
+}

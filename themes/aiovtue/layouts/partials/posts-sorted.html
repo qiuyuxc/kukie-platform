@@ -1,0 +1,17 @@
+{{- $pages := .Pages | default slice -}}
+{{- $pinned := slice -}}
+{{- $regular := slice -}}
+{{- range $pages -}}
+  {{- if .Params.pinned -}}
+    {{- $pinned = $pinned | append . -}}
+  {{- else -}}
+    {{- $regular = $regular | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- $pinned = sort $pinned "Date" "desc" -}}
+{{- $regular = sort $regular "Date" "desc" -}}
+{{- $sorted := $pinned -}}
+{{- range $regular -}}
+  {{- $sorted = $sorted | append . -}}
+{{- end -}}
+{{- return $sorted -}}

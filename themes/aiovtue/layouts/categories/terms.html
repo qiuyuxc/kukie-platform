@@ -1,0 +1,52 @@
+{{ define "main" }}
+{{ $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") }}
+{{ $posts = partial "posts-sorted.html" (dict "Pages" $posts) }}
+{{ $homeLayout := .Site.Params.home.layout | default "cards" }}
+{{ if not (in (slice "cards" "timeline" "list") $homeLayout) }}{{ $homeLayout = "cards" }}{{ end }}
+{{ $listArchives := eq $homeLayout "timeline" }}
+{{ $mobileCardsList := partial "mobile-cards-list-enabled.html" (dict "Site" .Site) }}
+<article class="sakura-page sakura-taxonomy-page sakura-categories-page{{ if $listArchives }} is-list-archives{{ end }}{{ if eq $homeLayout "list" }} is-layout-list{{ end }}{{ if $mobileCardsList }} is-mobile-cards-list{{ end }}">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+    <div id="categories-chart" class="sakura-stat-chart sakura-categories-chart" data-echarts-url="{{ `/vendor/echarts/echarts.min.js` | relURL }}"></div>
+    <script type="application/json" id="categories-chart-data">{{ $data := slice }}{{ range .Data.Terms.ByCount }}{{ $data = $data | append (dict "name" .Page.Title "value" .Count "categoryKey" .Term) }}{{ end }}{{ $data | jsonify | safeHTML }}</script>
+    <div class="sakura-tag-buttons sakura-categories-list">
+      {{ range .Data.Terms.ByCount }}
+      <button type="button" class="sakura-tag-button" data-category="{{ .Term }}">{{ .Page.Title }} [{{ .Count }}]</button>
+      {{ end }}
+    </div>
+    <div id="categories-post-section" class="sakura-categories-posts" data-list-layout="{{ if $listArchives }}archives{{ else }}cards{{ end }}" hidden>
+      <div class="sakura-section-divider">
+        <span class="iconify sakura-section-divider__icon" data-icon="fa6-solid:water"></span>
+        <span class="sakura-section-divider__text">文章列表</span>
+      </div>
+      {{ if $listArchives }}
+      {{- partial "archives-timeline-list.html" (dict
+        "Pages" $posts
+        "ItemClass" "categories-post-item"
+        "FilterKey" "categories"
+        "Id" "categories-post-list"
+        "Hidden" true
+      ) -}}
+      {{ else }}
+      <div class="sakura-post-list">
+        <div class="post-list-container post-list-container--cards{{ if eq $homeLayout "list" }} post-list-container--desktop-list{{ end }}{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}" id="categories-post-list">
+          {{ range $index, $page := $posts }}
+          {{ $cats := slice }}
+          {{ range ($page.GetTerms "categories") }}
+            {{ $cats = $cats | append .Data.Term }}
+          {{ end }}
+          {{ if not $cats }}
+            {{ $cats = $page.Params.categories | default slice }}
+          {{ end }}
+          <div class="categories-post-item" data-categories='{{ $cats | jsonify }}' hidden>
+            {{- partial "post-card.html" (dict "Page" $page "Site" $.Site "Index" $index) -}}
+          </div>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</article>
+{{ end }}

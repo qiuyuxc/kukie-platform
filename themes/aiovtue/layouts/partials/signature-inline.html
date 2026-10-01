@@ -1,0 +1,25 @@
+{{- $cropLeft := "" -}}
+{{- $cropTop := "" -}}
+{{- $cropBottom := "" -}}
+{{- $primary := false -}}
+{{- $autoplay := true -}}
+{{- $prose := false -}}
+{{- if reflect.IsMap . -}}
+  {{- with .cropLeft }}{{ $cropLeft = . }}{{ end -}}
+  {{- with .cropTop }}{{ $cropTop = . }}{{ end -}}
+  {{- with .cropBottom }}{{ $cropBottom = . }}{{ end -}}
+  {{- with .primary }}{{ $primary = . }}{{ end -}}
+  {{- if eq .autoplay false }}{{ $autoplay = false }}{{ end -}}
+  {{- with .prose }}{{ $prose = . }}{{ end -}}
+{{- end -}}
+<span class="signature-inline{{ if $prose }} signature-inline--prose{{ end }}{{ if $primary }} signature-inline--primary{{ end }}"><span class="signature-widget"
+      role="img"
+      aria-label="{{ site.Params.author.name | default `手写签名` }}"
+      tabindex="0"
+      title="点击重播签名动画"
+      data-view-pad="0"
+      {{- if not $autoplay }} data-autoplay="false"{{ end }}
+      {{- with $cropLeft }} data-crop-left="{{ . }}"{{ end }}
+      {{- with $cropTop }} data-crop-top="{{ . }}"{{ end }}
+      {{- with $cropBottom }} data-crop-bottom="{{ . }}"{{ end }}
+      data-signature-src="{{ `/signature/绘图.svg` | relURL }}"></span></span>

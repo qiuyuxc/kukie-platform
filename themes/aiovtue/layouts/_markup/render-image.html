@@ -1,0 +1,43 @@
+{{- $dest := strings.TrimSpace .Destination -}}
+{{- $alt := .PlainText | default .Title | default "" -}}
+{{- $isSignature := and (eq $alt "签名") (in (slice "signature:" "signature" "#signature") $dest) -}}
+{{- if $isSignature -}}
+{{- partial "signature-inline.html" (merge (partial "signature-prose-args.html" .) (dict "primary" true)) -}}
+{{- else -}}
+{{- $lower := lower $dest -}}
+{{- $isVideo := or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg") -}}
+{{- $src := $dest -}}
+{{- $parsed := urls.Parse $dest -}}
+{{- with .Page.Resources.GetMatch (printf "**/%s" $parsed.Path) -}}
+  {{- $src = .RelPermalink -}}
+{{- else -}}
+  {{- if not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//")) -}}
+    {{- if not (hasPrefix $src "/") -}}
+      {{- $src = printf "/%s" $src -}}
+    {{- end -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+{{- end -}}
+{{- if $isVideo -}}
+<span class="sakura-markdown-media-wrap sakura-markdown-media-wrap--video">
+  <video
+    class="sakura-markdown-media sakura-markdown-video"
+    src="{{ $src }}"
+    controls
+    playsinline
+    preload="metadata"
+    {{- with $alt }} title="{{ . }}"{{ end }}
+  ></video>
+  <button type="button" class="sakura-markdown-lightbox-btn" aria-label="放大播放" title="放大播放">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M15 3h6v6h-2V6.41l-7.78 7.79-1.41-1.42L17.59 5H15V3zM5 5h5V3H3v7h2V5zm14 14h-5v2h7v-7h-2v5zm-8.41-2.59L3 19.59V15h-2v7h7v-2H5.41l7.78-7.79 1.41 1.41z"/></svg>
+  </button>
+</span>
+{{- else -}}
+<img
+  src="{{ $src }}"
+  alt="{{ $alt }}"
+  loading="lazy"
+  decoding="async"
+>
+{{- end -}}
+{{- end -}}

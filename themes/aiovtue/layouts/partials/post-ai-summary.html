@@ -1,0 +1,10 @@
+{{- with .Params.ai -}}
+<section class="sakura-post-ai-summary" aria-label="AI摘要">
+  <div class="sakura-post-ai-summary__head">
+    <iconify-icon icon="mdi:robot-outline" class="sakura-post-ai-summary__icon" aria-hidden="true"></iconify-icon>
+    <span class="sakura-post-ai-summary__label">AI摘要</span>
+  </div>
+  <p class="sakura-post-ai-summary__text"></p>
+  <template class="sakura-post-ai-summary__source">{{ . }}</template>
+</section>
+{{- end -}}

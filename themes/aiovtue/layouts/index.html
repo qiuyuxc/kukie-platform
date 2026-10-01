@@ -1,0 +1,118 @@
+{{ define "main" }}
+{{ $layoutPool := partial "home-layout-pool.html" . }}
+{{ $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") }}
+{{ $posts = partial "posts-sorted.html" (dict "Pages" $posts) }}
+{{ $cardsPagingConfig := partial "home-cards-paging-config.html" (dict "Site" .Site "WeeklyFollowHome" false) }}
+{{ $cardsPaging := $cardsPagingConfig.Paging }}
+{{ $cardsBatchSize := $cardsPagingConfig.BatchSize }}
+{{ $paginator := .Paginate $posts $cardsBatchSize }}
+{{ $cardsLoadMore := eq $cardsPaging "loadMore" }}
+{{ $timelineBatchSize := .Site.Params.home.timelineBatchSize | default 10 }}
+{{ $desktopListColumns := .Site.Params.home.desktopListColumns | default "single" }}
+{{ if not (in (slice "single" "double") $desktopListColumns) }}{{ $desktopListColumns = "single" }}{{ end }}
+{{ $desktopListItemStyle := .Site.Params.home.desktopListItemStyle | default "cards" }}
+{{ if not (in (slice "cards" "list") $desktopListItemStyle) }}{{ $desktopListItemStyle = "cards" }}{{ end }}
+{{ $mobileCardsListCards := partial "mobile-cards-list-enabled.html" (dict "Site" .Site "HomeLayout" "cards") }}
+{{ $mobileCardsListList := partial "mobile-cards-list-enabled.html" (dict "Site" .Site "HomeLayout" "list") }}
+{{ $featuredPool := slice -}}
+{{- $homeParams := .Site.Params.home | default dict -}}
+{{- $featuredDesktop := partial "bool-param.html" (dict "Param" "home.featuredDesktop" "Map" $homeParams "Key" "featuredDesktop" "Default" true) -}}
+{{- $featuredMobile := partial "bool-param.html" (dict "Param" "home.featuredMobile" "Map" $homeParams "Key" "featuredMobile" "Default" true) -}}
+{{- if and (in $layoutPool.pool "list") (or $featuredDesktop $featuredMobile) -}}
+  {{- $featuredPool = partial "featured-pool.html" (dict "Pages" $posts "Site" .Site) -}}
+{{- end -}}
+{{ $sharedCtx := dict
+  "PageCtx" .
+  "Posts" $posts
+  "Paginator" $paginator
+  "FeaturedPool" $featuredPool
+  "CardsLoadMore" $cardsLoadMore
+  "CardsBatchSize" $cardsBatchSize
+  "TimelineBatchSize" $timelineBatchSize
+}}
+{{ $shellClasses := printf "is-layout-%s" $layoutPool.primary }}
+{{ if eq $layoutPool.primary "list" }}
+  {{ if eq $desktopListColumns "double" }}{{ $shellClasses = printf "%s is-desktop-list-double" $shellClasses }}{{ end }}
+  {{ if and (eq $desktopListColumns "single") (eq $desktopListItemStyle "cards") }}{{ $shellClasses = printf "%s is-desktop-list-item-cards" $shellClasses }}{{ end }}
+  {{ if $mobileCardsListList }}{{ $shellClasses = printf "%s is-mobile-cards-list" $shellClasses }}{{ end }}
+{{ else if eq $layoutPool.primary "cards" }}
+  {{ if $mobileCardsListCards }}{{ $shellClasses = printf "%s is-mobile-cards-list" $shellClasses }}{{ end }}
+{{ end }}
+<section class="sakura-home">
+  {{- partial "hero.html" . -}}
+  <div
+    class="sakura-home-layout {{ $shellClasses }}"
+    id="home-posts"
+    data-home-layout="{{ $layoutPool.primary }}"
+    data-layout-primary="{{ $layoutPool.primary }}"
+    data-list-columns-primary="{{ $desktopListColumns }}"
+    data-desktop-list-item-style="{{ $desktopListItemStyle }}"
+    data-layout-random="{{ $layoutPool.variantRandomEnabled }}"
+    data-mobile-cards-layout="{{ .Site.Params.home.mobileCardsLayout | default "stack" }}"
+    data-cards-paging="{{ $cardsPaging }}"
+    data-cards-batch-size="{{ $cardsBatchSize }}"
+    data-home-paginator-page="{{ $paginator.PageNumber }}"
+  >
+    {{- if and $featuredPool $layoutPool.listColumnsRandom -}}
+      <div class="home-list-featured-mount">
+        {{- partial "home-list-featured.html" (dict "Pool" $featuredPool) -}}
+      </div>
+    {{- end -}}
+    {{- $renderPool := $layoutPool.pool -}}
+    {{- if not $layoutPool.variantRandomEnabled -}}
+      {{- $renderPool = slice $layoutPool.primary -}}
+    {{- end -}}
+    {{- range $layout := $renderPool -}}
+      {{- if eq $layout "cards" -}}
+        {{- partial "home-layout-variant-cards.html" (merge $sharedCtx (dict
+          "MobileCardsList" $mobileCardsListCards
+          "Hidden" (and $layoutPool.variantRandomEnabled (ne $layoutPool.primary "cards"))
+          "PostListId" (not (and $layoutPool.variantRandomEnabled (ne $layoutPool.primary "cards")))
+          "RenderPagination" true
+        )) -}}
+      {{- else if eq $layout "timeline" -}}
+        {{- partial "home-layout-variant-timeline.html" (merge $sharedCtx (dict
+          "Hidden" (and $layoutPool.variantRandomEnabled (ne $layoutPool.primary "timeline"))
+          "PostListId" (not (and $layoutPool.variantRandomEnabled (ne $layoutPool.primary "timeline")))
+        )) -}}
+      {{- else if eq $layout "list" -}}
+        {{- if $layoutPool.listColumnsRandom -}}
+          {{- partial "home-layout-variant-list.html" (merge $sharedCtx (dict
+            "MobileCardsList" $mobileCardsListList
+            "IsDouble" false
+            "SkipFeatured" true
+            "Hidden" (and $layoutPool.variantRandomEnabled (or (ne $layoutPool.primary "list") (ne $desktopListColumns "single")))
+            "PostListId" (not (and $layoutPool.variantRandomEnabled (or (ne $layoutPool.primary "list") (ne $desktopListColumns "single"))))
+            "RenderPagination" true
+          )) -}}
+          {{- partial "home-layout-variant-list.html" (merge $sharedCtx (dict
+            "MobileCardsList" $mobileCardsListList
+            "IsDouble" true
+            "SkipFeatured" true
+            "Hidden" (and $layoutPool.variantRandomEnabled (or (ne $layoutPool.primary "list") (ne $desktopListColumns "double")))
+            "PostListId" (not (and $layoutPool.variantRandomEnabled (or (ne $layoutPool.primary "list") (ne $desktopListColumns "double"))))
+            "RenderPagination" true
+          )) -}}
+        {{- else -}}
+          {{- partial "home-layout-variant-list.html" (merge $sharedCtx (dict
+            "MobileCardsList" $mobileCardsListList
+            "IsDouble" (eq $desktopListColumns "double")
+            "Hidden" false
+            "PostListId" true
+            "RenderPagination" true
+          )) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $cardsLoadMore -}}
+      {{- partial "home-cards-load-more.html" (dict
+        "PageCtx" .
+        "Posts" $posts
+        "Paginator" $paginator
+        "CardsLoadMore" $cardsLoadMore
+        "CardsBatchSize" $cardsBatchSize
+      ) -}}
+    {{- end -}}
+  </div>
+</section>
+{{ end }}

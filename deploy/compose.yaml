@@ -1,0 +1,47 @@
+name: kukie
+services:
+  kukie:
+    image: ${KUKIE_IMAGE:-ghcr.io/qiuyuxc/kukie-platform:latest}
+    restart: unless-stopped
+    environment:
+      KUKIE_SITE_URL: ${KUKIE_SITE_URL:?Set KUKIE_SITE_URL to the origin used when building}
+      KUKIE_CONSOLE_ORIGINS: https://${KUKIE_CONSOLE_HOST:?Set KUKIE_CONSOLE_HOST}
+      KUKIE_SECURE_COOKIE: "1"
+      KUKIE_INDEXNOW_KEY: ${KUKIE_INDEXNOW_KEY:-}
+    volumes:
+      - kukie_data:/data
+    ports:
+      - "127.0.0.1:8084:8084"
+      - "127.0.0.1:8085:8085"
+      - "127.0.0.1:8086:8086"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      kukie:
+        condition: service_healthy
+    environment:
+      KUKIE_SITE_HOST: ${KUKIE_SITE_HOST:?Set KUKIE_SITE_HOST}
+      KUKIE_CONSOLE_HOST: ${KUKIE_CONSOLE_HOST:?Set KUKIE_CONSOLE_HOST}
+      KUKIE_API_HOST: ${KUKIE_API_HOST:?Set KUKIE_API_HOST}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  kukie_data:
+    name: kukie_data
+  caddy_data:
+  caddy_config:

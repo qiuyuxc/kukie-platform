@@ -1,0 +1,35 @@
+{{- $cover := strings.TrimSpace (.cover | default "") -}}
+{{- if $cover -}}
+  {{- if not (or (hasPrefix $cover "http://") (hasPrefix $cover "https://") (hasPrefix $cover "//")) -}}
+    {{- if not (hasPrefix $cover "/") -}}
+      {{- $cover = printf "/%s" $cover -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $src := $cover -}}
+  {{- if not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//")) -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+  {{- $lower := lower $cover -}}
+  {{- $isVideo := or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg") -}}
+  {{- $class := .class | default "sakura-lazy-img" -}}
+  {{- $loading := .loading | default "lazy" -}}
+  {{- if $isVideo -}}
+  <video
+    class="sakura-cover-thumb {{ $class }}"
+    src="{{ $src }}"
+    muted
+    playsinline
+    preload="metadata"
+    disablepictureinpicture
+    aria-hidden="true"
+  ></video>
+  {{- else -}}
+  <img
+    class="{{ $class }}"
+    src="{{ $src }}"
+    alt="{{ .title | default "" }}"
+    loading="{{ $loading }}"
+    decoding="async"
+  >
+  {{- end -}}
+{{- end -}}

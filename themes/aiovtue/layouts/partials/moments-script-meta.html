@@ -1,0 +1,4 @@
+{{- if or (eq .Section "moments") (eq .Layout "moments") -}}
+{{- $momentsJs := resources.Get "js/moments-init.js" | js.Build | minify | fingerprint -}}
+<meta name="sakura-moments-script" content="{{ $momentsJs.RelPermalink }}">
+{{- end -}}

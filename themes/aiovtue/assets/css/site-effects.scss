@@ -1,0 +1,149 @@
+// 樱花/雪：飘落轨迹
+
+@keyframes sakura-fx-drift-a {
+  from {
+    opacity: var(--sakura-fx-opacity, 0.85);
+    transform: translate3d(0, -15vh, 0) rotate(var(--sakura-fx-rotate, 0deg)) scale(var(--sakura-fx-scale, 1));
+  }
+  to {
+    opacity: calc(var(--sakura-fx-opacity, 0.85) * 0.2);
+    transform: translate3d(var(--sakura-fx-shift, 0), 120vh, 0) rotate(calc(var(--sakura-fx-rotate, 0deg) + 180deg)) scale(var(--sakura-fx-scale, 1));
+  }
+}
+
+@keyframes sakura-fx-drift-b {
+  from {
+    opacity: var(--sakura-fx-opacity, 0.85);
+    transform: translate3d(0, -20vh, 0) rotate(var(--sakura-fx-rotate, 0deg)) scale(var(--sakura-fx-scale, 1));
+  }
+  to {
+    opacity: calc(var(--sakura-fx-opacity, 0.85) * 0.15);
+    transform: translate3d(calc(var(--sakura-fx-shift, 0) * -1), 115vh, 0) rotate(calc(var(--sakura-fx-rotate, 0deg) - 160deg)) scale(var(--sakura-fx-scale, 1));
+  }
+}
+
+@keyframes sakura-fx-drift-c {
+  from {
+    opacity: var(--sakura-fx-opacity, 0.85);
+    transform: translate3d(0, -10vh, 0) rotate(var(--sakura-fx-rotate, 0deg)) scale(var(--sakura-fx-scale, 1));
+  }
+  to {
+    opacity: calc(var(--sakura-fx-opacity, 0.85) * 0.25);
+    transform: translate3d(calc(var(--sakura-fx-shift, 0) * 0.6), 118vh, 0) rotate(calc(var(--sakura-fx-rotate, 0deg) + 90deg)) scale(var(--sakura-fx-scale, 1));
+  }
+}
+
+// 雨：倾斜 7°，沿左下方直线下落（140vh × tan7° ≈ 17.2vh）
+.sakura-fx-randomized.sakura-fx-rain {
+  --sakura-fx-rain-angle: 7deg;
+}
+
+@keyframes sakura-fx-rain-fall {
+  from {
+    opacity: var(--sakura-fx-rain-opacity, 0.65);
+    translate: 17.2vh -20vh;
+    rotate: var(--sakura-fx-rain-angle);
+  }
+  to {
+    opacity: calc(var(--sakura-fx-rain-opacity, 0.65) * 0.2);
+    translate: 0 120vh;
+    rotate: var(--sakura-fx-rain-angle);
+  }
+}
+
+.sakura-fx-layer {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  isolation: isolate;
+}
+
+.sakura-fx-randomized {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sakura-fx-paused,
+.sakura-fx-paused * {
+  animation-play-state: paused !important;
+}
+
+.sakura-fx-randomized.sakura-fx-rain > div {
+  position: absolute !important;
+  top: 0 !important;
+  width: 0.22vw !important;
+  min-width: 1.5px !important;
+  height: 4.2vw !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+  border-radius: 40% !important;
+  background-color: rgba(255, 255, 255, 0.62) !important;
+  transform-origin: top center !important;
+  animation-name: sakura-fx-rain-fall !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+
+.sakura-fx-randomized.sakura-fx-fall > div {
+  position: absolute !important;
+  top: 0 !important;
+  margin: 0 !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+
+// 萤火虫：仅从底部向上飘
+@keyframes sakura-fx-firefly-rise {
+  from {
+    opacity: calc(var(--sakura-fx-firefly-opacity, 0.5) * 0.35);
+    translate: var(--sakura-fx-firefly-shift, 0) 108vh;
+  }
+  to {
+    opacity: var(--sakura-fx-firefly-opacity, 0.5);
+    translate: calc(var(--sakura-fx-firefly-shift, 0) + var(--sakura-fx-firefly-drift, 0)) -12vh;
+  }
+}
+
+.sakura-fx-randomized.sakura-fx-firefly > div {
+  position: absolute !important;
+  top: 0 !important;
+  width: 0.5vw !important;
+  min-width: 3px !important;
+  height: 0.5vw !important;
+  min-height: 3px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background-color: #fff06b !important;
+  border: 1px solid rgba(255, 240, 107, 0.75) !important;
+  box-shadow: 0 0 6px rgba(255, 240, 107, 0.55);
+  animation-name: sakura-fx-firefly-rise !important;
+  animation-timing-function: ease-in-out !important;
+  animation-iteration-count: infinite !important;
+}
+
+.sakura-fx-randomized.sakura-fx-spread {
+  display: flex !important;
+  justify-content: space-around !important;
+  align-content: flex-start !important;
+  flex-wrap: wrap !important;
+}
+
+.sakura-fx-randomized.sakura-fx-spread > div {
+  flex: 0 0 auto !important;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  html:not([data-sakura-effects-mobile='1']) .sakura-fx-layer {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-fx-layer {
+    display: none !important;
+  }
+}

@@ -1,0 +1,14 @@
+blog.example.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8086
+}
+
+console.example.com {
+	respond /downloads/* 404
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8085
+}
+
+api.example.com {
+	reverse_proxy 127.0.0.1:8084
+}

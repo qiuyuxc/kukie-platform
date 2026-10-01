@@ -1,0 +1,7 @@
+{{- $showDate := .showDate -}}
+{{- $displayFormat := .displayFormat | default "2006-01-02" -}}
+{{- $localHMS := $showDate.Format "15:04:05" -}}
+{{- $dateOnly := eq $localHMS "00:00:00" -}}
+{{- $display := $showDate.Format $displayFormat -}}
+{{- $datetime := cond $dateOnly ($showDate.Format "2006-01-02") ($showDate.UTC.Format "2006-01-02T15:04:05Z") -}}
+{{- return (dict "showDate" $showDate "display" $display "datetime" $datetime "dateOnly" $dateOnly) -}}

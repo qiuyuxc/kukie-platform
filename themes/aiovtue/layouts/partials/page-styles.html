@@ -1,0 +1,116 @@
+{{- $commentProvider := default "twikoo" site.Params.comment.provider -}}
+
+{{- if partial "comments-styles-needed.html" . -}}
+
+  {{- if eq $commentProvider "twikoo" -}}
+
+    {{- partial "stylesheet.html" (dict "name" "css/twikoo-comment.scss" "key" "comment") -}}
+
+  {{- else if eq $commentProvider "waline" -}}
+
+    {{- partial "stylesheet.html" (dict "name" "css/waline-comment.scss" "key" "comment") -}}
+
+  {{- end -}}
+
+{{- end -}}
+
+{{- if eq .Section "gallery" -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/gallery.scss" "key" "gallery") -}}
+
+{{- end -}}
+
+{{- if eq .Section "excalidraw" -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/excalidraw.scss" "key" "excalidraw") -}}
+
+{{- end -}}
+
+{{- if and .IsPage (eq .Layout "gallery-post") -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/post-gallery.scss" "key" "gallery-post") -}}
+
+{{- end -}}
+
+{{- if and .IsPage (eq .Section "posts") .Params.ai -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/post-ai-summary.scss" "key" "post-ai-summary") -}}
+
+{{- end -}}
+
+{{- if partial "signature-needed.html" . -}}
+
+<link rel="stylesheet" data-sakura-page-style="signature" href="{{ `/signature/signature.css` | relURL }}">
+
+{{- end -}}
+
+{{- if or (eq .Section "moments") (eq .Layout "moments") -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/moments.scss" "key" "moments") -}}
+
+{{- end -}}
+
+{{- if eq .Layout "links" -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/links.scss" "key" "links") -}}
+
+{{- end -}}
+
+{{- if and (eq .Layout "bangumi") (partial "bangumi-enabled.html" .) -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/bangumi.scss" "key" "bangumi") -}}
+
+{{- end -}}
+
+{{- if partial "music-enabled.html" . -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/music-player.scss" "key" "music") -}}
+
+{{- end -}}
+
+{{- if partial "live2d-enabled.html" . -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/live2d-widget.scss" "key" "live2d") -}}
+
+{{- end -}}
+
+{{- if partial "effects-enabled.html" . -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/site-effects.scss" "key" "site-effects") -}}
+
+{{- end -}}
+
+{{- if and site.Params.search.enable (ne .Layout "search") -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/search.scss" "key" "search-modal") -}}
+
+{{- end -}}
+
+{{- if eq .Layout "search" -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/search.scss" "key" "search") -}}
+
+{{- end -}}
+
+{{- if and (eq .Section "posts") (strings.HasSuffix .RelPermalink "/posts/weekly/") -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/weekly.scss" "key" "weekly") -}}
+
+{{- end -}}
+
+{{- if partial "lightbox-styles-needed.html" . -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/lightbox.scss" "key" "lightbox") -}}
+
+{{- end -}}
+
+{{- with site.Params.pjax -}}
+
+  {{- if .enable -}}
+
+    {{- partial "stylesheet.html" (dict "name" "css/pjax.scss" "key" "pjax") -}}
+
+  {{- end -}}
+
+{{- end -}}
+

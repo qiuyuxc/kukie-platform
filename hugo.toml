@@ -1,0 +1,436 @@
+# 配置索引：
+#   [params]           站点参数总入口
+#   params.post        文章正文字号
+#   params.links       友链页
+#   params.moments     动态页
+#   params.bangumi     追番页（Bilibili）
+#   params.loader      全站加载动画
+#   params.author      作者信息
+#   params.hero        首页 Hero
+#   params.footer      页脚
+#   params.home        首页布局
+#   params.notice      公告栏
+#   params.social      社交图标
+#   params.charts      归档/标签图表
+#   params.sponsor     赞助
+#   params.license     版权声明
+#   params.comment     评论 provider
+#   params.waline      Waline（备用）
+#   params.twikoo      Twikoo（当前）
+#   params.envelope    留言页信封
+#   params.navbar      顶栏
+#   params.search      全文搜索
+#   params.menu.main   导航菜单
+#   params.music       音乐播放器
+#   params.live2d      Live2D 看板娘
+#   params.mouse        团团猫动态鼠标指针
+#   params.effects      全站背景特效（樱花/雨/雪等）
+#   params.pjax        无刷新跳转
+# =============================================================================
+
+# 站点正式访问地址（影响 sitemap、RSS、分享链接等绝对 URL，部署前务必与真实域名一致）
+baseURL = 'https://www.kukie.cn/'
+locale = 'zh-cn'
+defaultContentLanguage = 'zh'
+title = 'Kukie的个人笔记'      # 站点名称（浏览器标题、页脚版权等）
+theme = 'aiovtue'           # 主题目录：themes/aiovtue/
+hasCJKLanguage = true      # 启用中文分词（搜索、摘要等）
+enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layouts/robots.txt）
+
+# --- 站点地图（sitemap.xml）---
+[sitemap]
+  changefreq = 'weekly'    # 更新频率提示
+  priority = 0.5
+  filename = 'sitemap.xml'
+
+# --- 分页（首页文章列表）---
+[pagination]
+  pagerSize = 10           # 每页文章数
+
+# --- 分类与标签 URL 路径 ---
+[taxonomies]
+  category = 'categories'  # /categories/xxx/
+  tag = 'tags'             # /tags/xxx/
+
+# --- 输出格式（首页与文章栏目额外生成 RSS）---
+[outputs]
+  home = ['HTML', 'RSS']
+  section = ['HTML', 'RSS']
+
+# --- Markdown 渲染 ---
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true        # 允许正文内嵌 HTML
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true      # 保留 LaTeX 分隔符，由 passthrough render hook + KaTeX 构建时渲染
+        # 块级公式 $$ 结束后若紧跟 --- 分隔线，中间必须空一行，否则 Goldmark 会误解析为标题
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)'], ['$', '$']]
+  [markup.highlight]
+    style = "github"       # 代码高亮主题
+    noClasses = false
+    lineNos = false
+    tabWidth = 4
+  [markup.tableOfContents]
+    startLevel = 2         # 目录从 h2 开始
+    endLevel = 4           # 目录至 h4，不显示 h5/h6
+    ordered = false
+
+# --- 资源类型：将 .excalidraw 识别为 JSON page bundle 资源 ---
+[mediaTypes]
+  [mediaTypes."application/json"]
+    suffixes = ["json", "excalidraw"]
+
+# =============================================================================
+# 站点参数（主题通过 .Site.Params 读取）
+# =============================================================================
+[params]
+  subtitle = '记录个人随笔与技术实践'                              # 副标题（首页标题后缀）
+  description = '记录个人随笔与技术实践的独立站点，主要分享折腾过程中的想法与经验。'                  # 站点默认描述（SEO、分享卡片）
+  primaryColor = '#DF9193'                     # 主题主色
+  favicon = '/favicon.ico'   # 站点图标（本地 static/favicon.ico，源 https://r2.kva.cc/1000232065.ico）
+  defaultCover = '/hero/tt3.png'               # 文章默认头图（无 cover 时使用）
+  math = false                                 # 默认关闭；单篇 front matter 写 math: true 启用构建时 KaTeX 渲染
+  postIndent = true                            # 文章/关于页正文首行缩进 2em（单篇可写 indent: false 关闭）
+
+  # --- 文章/关于页正文 ---
+  [params.post]
+    fontSize = "1.1rem"                          # 正文字号（rem，如 0.95rem / 1.1rem）
+
+  # --- 友链页 ---
+  [params.links]
+    layout = 'simple'                         # preview：卡片截图 | simple：长条头像+悬停预览
+    rssEnable = false                         # 友链页「朋友动态」RSS 展示（关闭时不拉取 RSS）
+    footerEnable = false                      # 全站页脚友链列表展示
+
+  # --- 动态页（每条动态：content/moments/*.md，front matter 仅需 date）---
+  [params.moments]
+    layout = "memos"                          # memos：头像时间线 | cards：居中卡片
+    cardMaxWidth = "720px"                    # cards 模式下列表最大宽度
+
+  # --- 追番页（Bilibili 追番列表，构建时拉取 data/bangumi.json）---
+  [params.bangumi]
+    enable = false                            # 是否启用追番页与构建时数据拉取
+    vmid = ''
+    quote = ''
+
+  # --- Excalidraw 画板文章（content/excalidraw/<slug>/index.md + *.excalidraw）---
+  # 独立栏目，首页/归档/搜索与 posts 合并展示；单页为交互式只读查看器
+
+  # --- 全站加载动画（首页进入时的樱花加载页）---
+  [params.loader]
+    enable = true
+    minShow = 0            # 最短显示时间（毫秒）
+    maxDuration = 6000     # 最长等待时间（毫秒）
+
+  # --- 侧栏 / 关于页作者信息 ---
+  [params.author]
+    name = 'Kukie'
+    avatar = 'https://q2.qlogo.cn/headimg_dl?dst_uin=1830998274&spec=0'   # 头像（直接引用 QQ 头像链接）
+    statusEmoji = '🍥'     # 头像角标
+    statusMessage = '没活了'
+
+  # --- 首页 Hero 大图 / 视频轮播 ---
+  # 媒体文件放在 static/hero/，此处写 URL 路径（以 / 开头）
+  
+  
+  
+  # grid 全站背景网格（仅 params.hero.style = 'grid' 时生效）
+  # size：单元格边长（px）；lineOpacity / lineOpacityDark：线条透明度 0~1，越大越深
+  [params.hero.grid]
+    size = 20
+    lineOpacity = 0.1
+    lineOpacityDark = 0.1
+
+  [params.hero]
+    title = 'Kukie'
+    # motto：关闭一言时显示的格言；字符串=固定一句，数组=每次随机一条（打字机效果同一言）
+    motto = '记录个人随笔与技术实践'
+    randomUrls = true      # 随机切换背景
+    enableHitokoto = true  # 一言 API 随机格言
+    typewriter = true      # 打字机效果
+    typewriterSpeed = 80
+    style = 'dot'          # 背景样式：dot / grid 等
+    fixedImg = true
+    playerUrl = ''
+    # 首页 Hero 随机图（Static_RandomPicAPI 引用方案，https://github.com/qiuyuxc/Static_RandomPicAPI）
+    # 每次会话取一张随机图：桌面端横屏 getRandomPicH()，移动端(<=768px)竖屏 getRandomPicV()
+    # 留空 '' 则回退为下方 urls 的本地静态轮播；random.js 加载失败时会自动回退
+    randomPicApi = 'https://pic.kukie.cn/random.js'
+    urls = [
+      '/hero/tt3.png',
+      '/hero/tt1.png',
+      '/hero/tt2.png',
+      '/hero/hero-1.jpg', 
+      '/hero/hero-2.png', 
+      '/hero/hero-3.jpg',
+      
+    ]
+
+  # --- 页脚 ---
+  [params.footer]
+    since = 2024           # 版权起始年
+    runtimeSince = '2024-01-01'   # 站点运行倒计时起点（YYYY-MM-DD）
+    icp = ''
+
+# --- 首页公告栏（右侧域名列表）---
+  # --- 首页文章列表布局 ---
+  # cards：默认卡片列表（含公告栏与随机文章轮播）
+  # list：紧凑列表（电脑端单列时左栏站点信息/公告/标签 + 右栏文章；双列时无侧栏；不显示顶部公告栏）
+  # timeline：居中时间线，文章左右交替；不显示公告栏与随机文章
+  # layout：关闭随机时使用的固定布局；layouts 未设置时的后备
+  # layouts：首页布局候选池（cards / list / timeline）（不建议使用）
+  # layoutRandom：是否启用随机（仅电脑端；移动端固定使用 layout） （不建议使用）
+  # layouts 含 2 项及以上：电脑端在布局变体间随机
+  # layouts 仅含 list 时：电脑端在 list 单列/双列间随机
+  # layoutRandom = false 时：固定使用 layout 与 desktopListColumns
+  # mobileCardsLayout：cards / list 模式下手机端文章列表样式（仅 max-width: 768px 生效）
+  # stack — 竖向卡片（cards 模式默认；list 模式下可显式设为 stack 以覆盖默认 list）
+  # list  — 列表样式：隐藏公告栏与随机文章
+  # single — 单列（默认）
+  # double — 双列
+  
+  
+  [params.home]
+    layout = 'list'   # （cards，list，timeline）建议不要使用时间线模式，即timeline，不成熟样式
+    desktopListColumns = 'single' # （single，double）list模式下单双列样式切换在此配置
+    desktopListItemStyle = 'cards' # layout=list时，single模式下选择文章列表为list/cards样式
+    mobileCardsLayout = 'list'     #移动端样式设置（list、stack）注意桌面端cards和list模式下移动端布局略有区别，具体自行切换查看和体验
+    mobileCardsBatchSize = 10  # 每页文章数，这个和上一个配置都是桌面移动端通用的，只是名字没改而已
+    # timelineBatchSize = 10   # 时间线模式：首屏条数及每次滚动加载条数
+    
+    # 下列配置在list模式下生效，不建议更改
+    archiveHeatmapColumns = 13  # 右侧归档热力图：每行列数
+    archiveHeatmapRows = 4      # 右侧归档热力图：行数（格子总数 = 列数 × 行数）
+    randomSidebarCount = 7      # 右侧随机文章显示篇数，不建议过多
+    
+    # 下方配置不建议动，过大会影响网页性能
+    featuredCount = 4           # list 模式推荐区同时可见卡片数
+    featuredPoolCount = 12      # list 模式推荐区候选池（排序后取前 N 篇 SSR，供切换按钮轮换）
+    mobileNoticeTicker = true   # 移动端单行滚动公告
+    featuredDesktop = true      # 电脑端推荐文章区
+    featuredMobile = true       # 移动端推荐文章区
+    
+
+  # --- 侧栏 / Hero 社交图标（icon 为 Iconify 图标名）---
+  [[params.social]]
+    name = 'RSS'
+    link = '/index.xml'  # Hugo 默认 RSS 路径
+    icon = 'ri:rss-line'
+    color = 'orange'
+  [[params.social]]
+    name = 'GitHub'
+    link = 'https://github.com/qiuyuxc'
+    icon = 'ri:github-line'
+    color = '#6e5494'
+
+  # --- 归档 / 标签页 ECharts 图表 ---
+  [params.charts]
+    archivesStartMonth = '2025-12'   # 归档图起始月份
+    tagsChartLength = 10             # 标签图显示 Top N
+
+  # --- 文章页底部赞助按钮 ---
+  [params.sponsor]
+    enable = false
+    title = '赞助'
+    description = ''
+
+  # --- 文章版权声明（CC 协议）---
+  [params.license]
+    enable = true
+    type = 'by-nc-sa'      # CC 类型：by / by-nc / by-nc-sa / zero 等
+    language = 'zh'
+    
+  # --- 动态手写签名（signature-inline）---
+  # postCopyrightEnable：文章底部版权声明处的签名动画
+  # footerEnable：全站页脚 copyright 区「by xxx」处的签名动画（关闭后显示 author.name 文字）
+  # 不影响正文 Markdown 中 [签名](signature:) 的签名效果
+  [params.signature]
+    postCopyrightEnable = false
+    footerEnable = false
+
+  # --- 文章页脚导航 ---
+  [params.postFooter]
+    navigationMerge = true # 合并上一篇/下一篇导航样式
+
+  # --- 评论系统（文章 / 友链 / 留言页共用）---
+  # provider 可选：waline | twikoo
+  # 单篇文章可在 front matter 写 comment: false 关闭评论区
+  [params.comment]
+    provider = 'twikoo'  # twikoo（自部署于 tw.kukie.cn）；切换 waline 时改此处
+
+  # --- Waline 评论（https://waline.js.org/）---
+  # 仅当 params.comment.provider = waline 时生效；当前使用 twikoo，此处留作切换备用
+  [params.waline]
+    serverURL = ''                                # 切换到 waline 时填写服务端地址（末尾不要加 /）
+    placeholder = '分享你的想法...'
+
+  # --- Twikoo 评论（仅当 params.comment.provider = twikoo 时生效）---
+  # envId：自部署 Twikoo 的服务地址（tw.kukie.cn，需已运行 twikoo 服务）
+  # visitorEnable：文章访问量统计（需 provider=twikoo 且已配置 envId）
+  # COMMENT_PLACEHOLDER 请在 Twikoo 管理后台「配置」中设置
+  [params.twikoo]
+    envId = 'https://tw.kukie.cn/'
+    visitorEnable = false  # 按需开启文章阅读量（显示在文章标题下方）
+
+  # --- 留言页信封动画图片（文件在 static/envelope/）---
+  [params.envelope]
+    before = '/envelope/before.png'
+    after = '/envelope/after.png'
+    cover = '/envelope/cover.png'
+    line = '/envelope/line.png'
+    wrapHeight = 447
+    openHeight = 1050
+    openOffset = -200
+    danmakuOpenBottomTrim = 140   # 信封展开时弹幕区域底部向上缩短（像素）
+
+  # --- 顶栏标题 ---
+  [params.navbar]
+    titleParts = ['Kukie的个人笔记']   # 顶栏主标题分段（可产生动画效果）
+    subTitle = '记录个人随笔与技术实践'
+    offset = 0
+
+    # 移动端下滑隐藏顶栏（默认首页不生效，设 includeHome = true 则全站含首页生效）
+    [params.navbar.mobileCollapse]
+      enable = true
+      includeHome = false    # 是否包括主页
+      scrollThreshold = 5   # 滚动超过该距离后才允许隐藏（px）
+      scrollDelta = 10        # 单次滑动超过该值触发隐藏/恢复（px）
+      revealMode = 'scrollUp' # 隐藏后如何恢复：top = 回到顶部才显示 | scrollUp = 上划即显示
+
+    # 电脑端下滑隐藏顶栏（min-width: 769px；默认关闭）
+    [params.navbar.desktopCollapse]
+      enable = true
+      includeHome = false   # 是否包括主页
+      scrollThreshold = 5
+      scrollDelta = 5
+      revealMode = 'scrollUp'
+
+    # 顶栏随页面滚出视口（与自动隐藏互斥：对应端开启 collapse 时无效）
+    [params.navbar.scrollWithPage]
+      enable = false       # true = 内页顶栏随页面滚出视口；false = 全站 fixed 顶栏
+      includeHome = false # false = 首页保持 fixed + Hero 全屏；true = 首页也随页滚动（透明顶栏叠层）
+
+  # --- 全文搜索（Fuse.js）---
+  [params.search]
+    enable = true
+    threshold = 0.35       # 匹配灵敏度（越小越严格）
+
+  # --- 顶栏 / 侧栏导航菜单 ---
+  # weight 越小越靠前；带 items 的项会展开子菜单
+  [[params.menu.main]]
+    name = '首页'
+    url = '/'
+    icon = 'ant-design:home-filled'
+    weight = 1
+  [[params.menu.main]]
+    name = '文章'
+    url = '/categories/'
+    icon = 'ant-design:read-filled'
+    navGroup = 'posts'
+    weight = 2
+    [[params.menu.main.items]]
+      name = '分类'
+      url = '/categories/'
+      icon = 'ant-design:appstore-filled'
+    [[params.menu.main.items]]
+      name = '归档'
+      url = '/archives/'
+      icon = 'ant-design:container-filled'
+    [[params.menu.main.items]]
+      name = '标签'
+      url = '/tags/'
+      icon = 'ant-design:tags-filled'
+  [[params.menu.main]]
+    name = '友链'
+    url = '/links/'
+    icon = 'ant-design:global-outlined'
+    weight = 3
+  [[params.menu.main]]
+    name = '关于'
+    url = '/about/'
+    icon = 'ant-design:idcard-filled'
+    weight = 4
+
+# --- 音乐播放器（APlayer + Meting.js）---
+  # enable：是否显示播放器；单页可在 front matter 写 musicPlayer: false 关闭
+  [params.music]
+    enable = false
+    position = 'right'        # left | right，按钮默认停靠左下或右下
+    
+    # apis：按顺序尝试，前一个不可用时自动切换下一个，默认不需要动
+    apis = [
+      'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r',
+      'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id',
+      'https://meting.qjqq.cn/?server=:server&type=:type&id=:id',
+    ]
+    server = 'netease'
+    type = 'playlist'                             # playlist | song | album | artist
+    id = '2580064383'                             # 网易云歌单/歌曲 ID
+
+  # --- Live2D 看板娘（左下角 Live2D 角色）---
+  # enable：是否启用；单页可在 front matter 写 live2d: false 关闭
+  [params.live2d]
+    enable = false
+    minWidth = 768                                # 低于此宽度不加载
+    drag = false
+    tools = ['hitokoto', 'asteroids', 'switch-model', 'switch-texture', 'photo', 'info', 'quit']
+
+    # 看板娘运行时（脚本 / 样式 / 提示语，一般保持默认即可）
+    widget = 'https://live2d.kafuchino.top/'
+    waifuTips = 'jsdelivr/sequential/waifu-tips.js'
+    waifuCss = 'css/left.css'
+    waifuTipsJson = 'waifu-tips.json'
+
+    # 模型库 cdnPath（静态模型目录，含 model_list.json）— 与 apiPath 二选一
+    cdnPath = 'https://live2d.kafuchino.top/'     # nova1751 扩展库：少女前线等（21 组模型）
+    # 备用模型库（取消注释一行替换上方 cdnPath 即可切换模型种类）：
+    # cdnPath = 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/'   # fghrsh 经典库：Shizuku / 海王星 / Pio 等（7 组）
+    # cdnPath = 'https://cdn.jsdelivr.net/gh/fghrsh/live2d_api/'      # 同上 · jsDelivr 国内节点
+    # cdnPath = 'https://fastly.jsdelivr.net/gh/nova1751/live2d-api/' # nova1751 仓库镜像（模型集与 kafuchino 相同）
+    #
+    # 模型库 apiPath（fghrsh 动态 PHP 接口；启用时需注释掉上方 cdnPath）：
+    # apiPath = 'https://live2d.fghrsh.net/api/'                      # fghrsh 官方动态 API（接口式换模型/皮肤）
+
+  # --- 团团猫动态鼠标指针 ---
+  # enable：是否启用；单页可在 front matter 写 mouse: false 关闭
+  [params.mouse]
+    enable = false
+    path = '/mouse/tuantuanma/'                  # 预压缩 WebP + manifest.json（见 static/mouse/tuantuanma/）
+    scale = 0.25                                  # manifest 内记录的缩放；重新压缩时改 compress-mouse 脚本参数
+
+  # --- 全站背景特效（yzhanWeather · MIT，本地静态资源）---
+  # enable：是否启用；单页可在 front matter 写 effects: false 关闭
+  # type：sakura | rain | snow | firefly | butterfly | random（每次打开随机一种）
+  # mobile：触摸设备或宽度 ≤768px 是否启用（默认 false）
+  # randomize：打散雨/樱花/雪/蝴蝶轨迹；萤火虫不受此项影响，始终仅向上飘
+  [params.effects]
+    enable = true
+    type = 'firefly'
+    randomTypes = ['sakura', 'rain', 'snow', 'firefly', 'butterfly']
+    randomize = true                                # 打散位置/速度/轨迹，避免过于规律
+    mobile = false                                  # 移动端是否启用（默认关闭）
+    maxDuration = 10                                # 动画基准周期（秒），越大越慢
+    zIndex = 5                                      # 层级，需低于弹窗/导航
+    script = '/vendor/yzhanweather/yzhanweather.min.js'
+
+  # --- 站点顶栏公告（动态）---
+  # 页面加载后从 endpoint 拉一份 JSON 渲染顶栏。
+  # 改公告内容：只需更新那个 JSON 文件，不必走构建。改本文件里的配置才需要重新构建。
+  # 端点建议用环境变量覆盖，无需改仓库：HUGO_PARAMS_SITEBANNER_ENDPOINT
+  # （CF Pages → Settings → Environment variables，改完 Retry deployment）
+  # JSON 字段：enabled / level(info|warn|ok) / badge / text / link / external / updated
+  # enable = false 可整站关闭；endpoint 留空则不输出任何标记。
+  [params.siteBanner]
+    enable = true
+    endpoint = 'https://cloud.kukie.cn/d/M/notice.json?sign=OsjEhKhHOJ-NK8x6_csPGOQYdL5dfWCXcbyE0G6Wk8I=:0'
+    timeoutMs = 5000
+
+  # --- 站内无刷新跳转（PJAX）---
+  [params.pjax]
+    enable = true
+    fadeDuration = 200                            # 内容区淡入淡出时长（毫秒）
+    mountDelay = 120                              # 页内跳转：CSS/JS 就绪后额外等待（毫秒），减少布局突变

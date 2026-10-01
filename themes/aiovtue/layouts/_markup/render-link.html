@@ -1,0 +1,8 @@
+{{- $text := .PlainText | default .Text -}}
+{{- $dest := strings.TrimSpace .Destination -}}
+{{- $isSignature := and (eq $text "签名") (in (slice "signature:" "signature" "#signature") $dest) -}}
+{{- if $isSignature -}}
+{{- partial "signature-inline.html" (partial "signature-prose-args.html" .) -}}
+{{- else -}}
+<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if strings.HasPrefix $dest "http" }} target="_blank" rel="noopener"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- end -}}

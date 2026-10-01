@@ -1,0 +1,210 @@
+.sakura-excalidraw-page {
+  .sakura-page-content {
+    max-width: 960px;
+  }
+}
+
+.sakura-excalidraw-desc {
+  margin-bottom: 1.25rem;
+  font-size: var(--sakura-post-font-size, 1rem);
+}
+
+.sakura-excalidraw-stage {
+  position: relative;
+  width: 100%;
+  min-height: unquote("min(78vh, 900px)");
+  margin: 0 0 2rem;
+  border: 1px solid var(--sakura-color-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--sakura-excalidraw-stage-bg, var(--sakura-color-background));
+  box-shadow: 0 2px 12px color-mix(in srgb, #000 6%, transparent);
+}
+
+html.dark .sakura-excalidraw-stage,
+.sakura-excalidraw-stage[data-theme="dark"] {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 4px 20px color-mix(in srgb, #000 42%, transparent);
+}
+
+.sakura-excalidraw-canvas {
+  width: 100%;
+  min-height: unquote("min(78vh, 900px)");
+  height: unquote("min(78vh, 900px)");
+
+  .excalidraw {
+    height: 100%;
+  }
+}
+
+.sakura-excalidraw-stage.is-ready .sakura-excalidraw-fullscreen-btn {
+  display: inline-flex;
+}
+
+.sakura-excalidraw-fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 12;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.62);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sakura-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.sakura-excalidraw-fullscreen-btn__icon--exit {
+  display: none;
+}
+
+.sakura-excalidraw-fullscreen-btn.is-active {
+  .sakura-excalidraw-fullscreen-btn__icon--enter {
+    display: none;
+  }
+
+  .sakura-excalidraw-fullscreen-btn__icon--exit {
+    display: block;
+  }
+}
+
+.sakura-excalidraw-stage.is-viewport-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100dvh;
+  max-height: none;
+  min-height: 100dvh;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+
+  .sakura-excalidraw-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: none;
+  }
+}
+
+html.is-excalidraw-viewport-fullscreen {
+  overflow: hidden;
+
+  body {
+    overflow: hidden;
+  }
+
+  .sakura-navbar,
+  .sakura-footer,
+  .sakura-music,
+  #waifu,
+  #waifu-toggle,
+  #sidebar,
+  #sidebar-overlay,
+  .sakura-excalidraw-page .sakura-post-header,
+  .sakura-excalidraw-desc,
+  .sakura-excalidraw-footer {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+
+.sakura-excalidraw-stage.is-loading .sakura-excalidraw-canvas {
+  visibility: hidden;
+}
+
+.sakura-excalidraw-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--sakura-color-text-muted);
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sakura-excalidraw-stage:not(.is-loading) .sakura-excalidraw-loading {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sakura-excalidraw-stage.is-error .sakura-excalidraw-loading {
+  color: var(--sakura-color-action);
+  opacity: 1;
+  visibility: visible;
+}
+
+.sakura-excalidraw-empty {
+  margin: 0 0 2rem;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--sakura-color-divider);
+  border-radius: 10px;
+  color: var(--sakura-color-text-muted);
+  background: color-mix(in srgb, var(--sakura-color-primary) 4%, var(--sakura-color-background));
+  line-height: 1.7;
+}
+
+.sakura-excalidraw-footer {
+  .sakura-post-nav {
+    margin-top: 0;
+  }
+
+  .sakura-comment {
+    margin-top: 24px;
+  }
+}
+
+.sakura-excalidraw-list-page {
+  .sakura-page-content {
+    width: 100%;
+    max-width: var(--sakura-content-max-width);
+    margin-inline: auto;
+    padding: var(--sakura-page-header-content-gap) var(--sakura-content-padding-x) 48px;
+    box-sizing: border-box;
+  }
+
+  .sakura-post-list {
+    margin-top: 0;
+  }
+}
+
+.sakura-excalidraw-list-empty {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--sakura-color-divider);
+  border-radius: 10px;
+  color: var(--sakura-color-text-muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .sakura-excalidraw-stage:not(.is-viewport-fullscreen),
+  .sakura-excalidraw-stage:not(.is-viewport-fullscreen) .sakura-excalidraw-canvas {
+    min-height: unquote("min(62vh, 640px)");
+    height: unquote("min(62vh, 640px)");
+  }
+}

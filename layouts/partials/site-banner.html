@@ -1,0 +1,12 @@
+{{- /* 站点顶栏公告：动态拉取，改内容无需重新构建。
+       配置见 hugo.toml 的 [params.siteBanner]；enable 显式 false 可整站关闭。 */ -}}
+{{- $cfg := site.Params.siteBanner | default dict -}}
+{{- $endpoint := $cfg.endpoint | default "" -}}
+{{- $enabled := partial "bool-param.html" (dict "Param" "siteBanner.enable" "Default" true) -}}
+{{- if and $enabled $endpoint -}}
+<meta name="sakura-site-banner" content="{{ $endpoint }}" data-timeout="{{ $cfg.timeoutMs | default 5000 }}">
+{{- $css := resources.Get "css/site-banner.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{- $js := resources.Get "js/site-banner.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{- end -}}

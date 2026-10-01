@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{- $pages := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") -}}
+{{- $pages = partial "posts-sorted.html" (dict "Pages" $pages) -}}
+{{- $items := slice -}}
+{{- range $p := $pages -}}
+  {{- $items = $items | append (dict
+    "title" $p.Title
+    "url" $p.RelPermalink
+    "cover" (partial "post-cover.html" $p)
+    "date" ($p.Date.Format "2006-01-02")
+    "tags" ($p.Params.tags | default (slice))
+    "categories" ($p.Params.categories | default (slice))
+    "excerpt" (($p.Description | default $p.Summary) | plainify)
+  ) -}}
+{{- end -}}
+<article class="sakura-page sakura-search-page">
+  <div class="sakura-page-content">
+    <div class="search-page-box">
+      <p>想要找点什么呢？</p>
+      <div class="search-page-input-wrap">
+        <span aria-hidden="true">🔍</span>
+        <input id="search-page-input" type="search" placeholder="输入关键词搜索..." autocomplete="off">
+      </div>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+  <script type="application/json" id="search-index-data">{{ $items | jsonify | safeJS }}</script>
+</article>
+{{ end }}

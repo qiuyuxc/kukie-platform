@@ -1,0 +1,17 @@
+{{ define "main" }}
+<article class="sakura-page sakura-post sakura-post-page sakura-about-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-triple-columns-base sakura-triple-columns sakura-triple-columns--no-toc">
+    <aside class="sakura-post-aside-left" aria-hidden="true"></aside>
+    <div class="sakura-post-main">
+      <div class="sakura-page-content sakura-post-body">
+        {{- partial "post-content.html" . -}}
+        {{- partial "sponsor.html" . -}}
+        {{ if ne .Params.comment false }}
+        {{- partial "comment-section.html" . -}}
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</article>
+{{ end }}

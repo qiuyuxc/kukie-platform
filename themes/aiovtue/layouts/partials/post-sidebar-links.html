@@ -1,0 +1,28 @@
+{{- $group := index (site.Data.links.linkGroups | default slice) 0 -}}
+{{- $links := $group.links | default slice -}}
+{{- if gt (len $links) 0 -}}
+<div class="sakura-toc sakura-post-sidebar-links">
+  <details class="sakura-post-sidebar-links__details">
+    <summary class="outline-title sakura-post-sidebar-links__summary">
+      <span class="sakura-post-sidebar-links__summary-text">友链展示</span>
+      <iconify-icon icon="ant-design:right-outlined" class="sakura-post-sidebar-links__chevron" aria-hidden="true"></iconify-icon>
+    </summary>
+    <div class="sakura-toc__nav">
+      <nav aria-label="友链">
+        <ul>
+          {{- range $links -}}
+          {{- if not .pinLast -}}
+          <li><a href="{{ .url }}" class="toc-link toc-link--3" target="_blank" rel="friend noopener">{{ .blog | default .name }}</a></li>
+          {{- end -}}
+          {{- end -}}
+          {{- range $links -}}
+          {{- if .pinLast -}}
+          <li><a href="{{ .url }}" class="toc-link toc-link--3" target="_blank" rel="friend noopener">{{ .blog | default .name }}</a></li>
+          {{- end -}}
+          {{- end -}}
+        </ul>
+      </nav>
+    </div>
+  </details>
+</div>
+{{- end -}}

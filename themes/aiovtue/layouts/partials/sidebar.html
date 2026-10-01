@@ -1,0 +1,71 @@
+<aside class="sakura-sidebar left" id="sidebar" aria-hidden="true">
+  <div class="site-info">
+    <a href="{{ `/about/` | relLangURL }}" class="site-author-avatar">
+      {{- partial "author-avatar.html" (dict
+        "class" "rounded-full"
+        "alt" "avatar"
+        "play" true
+      ) -}}
+      <span class="site-author-status" title="{{ .Site.Params.author.statusMessage }}">{{ .Site.Params.author.statusEmoji }}</span>
+    </a>
+    <div class="site-author-name">
+      <a href="{{ `/about/` | relLangURL }}">{{ .Site.Params.author.name }}</a>
+    </div>
+    <span class="site-name">{{ .Site.Title }}</span>
+    <h4 class="site-subtitle">{{ .Site.Params.subtitle }}</h4>
+    <div class="site-description">{{ .Site.Params.description }}</div>
+  </div>
+
+  <div class="links-of-author">
+    {{ range .Site.Params.social }}
+    <a
+      class="sakura-icon-btn links-of-author-item"
+      href="{{ .link | relLangURL }}"
+      title="{{ .name }}"
+      target="_blank"
+      rel="noopener"
+      {{ with .color }}style="color: {{ . }}"{{ end }}
+    >
+      {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="links-of-author-item__icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+    </a>
+    {{ end }}
+  </div>
+
+  <nav class="sakura-sidebar-link" aria-label="侧边栏导航">
+    <ul class="sakura-sidebar-link-items has-groups mx-auto">
+      {{ range .Site.Params.menu.main }}
+      <li>
+        {{ if .items }}
+        <button
+          type="button"
+          class="sakura-sidebar-link-item sidebar-nav-group__toggle"
+          data-nav="{{ .url }}"
+          aria-expanded="false"
+          {{ with .navGroup }}data-nav-group="{{ . }}"{{ end }}
+        >
+          {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="sakura-nav-link-icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+          <span class="sidebar-nav-group__label">{{ .name }}</span>
+          <iconify-icon icon="ant-design:down-outlined" class="sidebar-nav-group__chevron" aria-hidden="true"></iconify-icon>
+        </button>
+        <ul class="sakura-sidebar-link-sub-items" hidden>
+          {{ range .items }}
+          <li>
+            <a class="sakura-nav-link sakura-sidebar-link-item" href="{{ .url | relLangURL }}" data-nav="{{ .url }}" title="{{ .name }}">
+              {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="sakura-nav-link-icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+              <span class="sakura-nav-link-text">{{ .name }}</span>
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+        {{ else }}
+        <a class="sakura-nav-link sakura-sidebar-link-item" href="{{ .url | relLangURL }}" data-nav="{{ .url }}" title="{{ .name }}">
+          {{ with .icon }}{{ printf `<iconify-icon icon="%s" class="sakura-nav-link-icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}{{ end }}
+          <span class="sakura-nav-link-text">{{ .name }}</span>
+        </a>
+        {{ end }}
+      </li>
+      {{ end }}
+    </ul>
+  </nav>
+</aside>
+<div class="sakura-sidebar__overlay va-overlay" id="sidebar-overlay"></div>

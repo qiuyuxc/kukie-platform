@@ -1,0 +1,22 @@
+[Unit]
+Description=Kukie blog, console and API
+After=network.target
+
+[Service]
+Type=simple
+User=kukie
+Group=kukie
+WorkingDirectory=/srv/kukie/current
+EnvironmentFile=/etc/kukie/kukie.env
+ExecStart=/bin/sh /srv/kukie/current/deploy/run.sh
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/kukie/data
+
+[Install]
+WantedBy=multi-user.target

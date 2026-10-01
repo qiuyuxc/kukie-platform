@@ -1,0 +1,21 @@
+{{- $mathEnabled := false -}}
+{{- if .Page.Params.math -}}
+  {{- if or (eq .Page.Section "posts") (eq .Page.Layout "about") -}}
+    {{- $mathEnabled = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $mathEnabled -}}
+  {{- $opts := dict "output" "html" "displayMode" (eq .Type "block") -}}
+  {{- with try (transform.ToMath .Inner $opts) -}}
+    {{- with .Err -}}
+      {{- errorf "KaTeX 渲染失败：%s（位置 %s）" . $.Position -}}
+    {{- else -}}
+      {{- .Value -}}
+      {{- $.Page.Store.Set "hasMath" true -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if eq .Type "block" -}}
+$$ {{ .Inner }} $$
+{{- else -}}
+${{ .Inner }}$
+{{- end -}}

@@ -1,0 +1,19 @@
+[outputs]
+home = ['HTML', 'RSS', 'Server']
+
+[outputFormats.Server]
+mediaType = 'application/json'
+baseName = 'site'
+path = '_server'
+isPlainText = true
+notAlternative = true
+
+[params.siteBanner]
+endpoint = '/api/v1/site/banner'
+
+[params.comment]
+provider = 'kukie'
+
+[params.twikoo]
+envId = ''
+visitorEnable = false

@@ -1,0 +1,761 @@
+/* Waline 评论：视觉对齐 Twikoo（输入区 + 评论卡片 + 无缩进回复） */
+.sakura-comment [data-waline],
+.sakura-comment .waline,
+.moment-comment-host [data-waline],
+.moment-comment-host .waline,
+.sakura-waline[data-waline] {
+  font-family: var(--va-font-serif) !important;
+
+  --wl-comment-input-border: #dcdfe6;
+  --wl-comment-input-bg: #fff;
+  --wl-comment-muted: #909399;
+  --wl-comment-text: #303133;
+  --wl-comment-card-bg: #fff;
+  --wl-comment-badge-bg: #5b9bd5;
+  --wl-comment-avatar-size: 40px;
+  --wl-comment-avatar-gap: 12px;
+  --wl-reply-avatar-size: 32px;
+  --wl-reply-avatar-gap: 10px;
+  --wl-comment-collapse-lines: 5;
+
+  --waline-theme-color: var(--sakura-color-primary, #fe9500);
+  --waline-active-color: var(--va-c-primary-dark, #e68600);
+  --waline-color: var(--wl-comment-text);
+  --waline-bg-color: var(--wl-comment-card-bg);
+  --waline-bg-color-light: var(--wl-comment-input-bg);
+  --waline-border-color: var(--wl-comment-input-border);
+  --waline-avatar-size: var(--wl-comment-avatar-size);
+  --waline-m-avatar-size: var(--wl-reply-avatar-size);
+  --waline-badge-color: var(--wl-comment-badge-bg);
+  --waline-info-color: var(--wl-comment-muted);
+  --waline-info-bg-color: color-mix(in srgb, var(--wl-comment-muted) 12%, transparent);
+  --waline-bg-color-hover: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 8%, var(--wl-comment-input-bg));
+  --waline-box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* ---------- 顶部评论输入 ---------- */
+  .wl-comment {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    overflow: visible;
+  }
+
+  .wl-login-info {
+    max-width: none;
+    margin-top: 0;
+    flex-shrink: 0;
+    position: relative;
+    overflow: visible;
+  }
+
+  .wl-avatar {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: #5cb87a;
+    overflow: visible;
+    position: relative;
+  }
+
+  .wl-logout-btn {
+    z-index: 2;
+    color: var(--wl-comment-muted);
+    background: var(--wl-comment-card-bg);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--wl-comment-input-border);
+
+    &:hover {
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .wl-login-nick {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--wl-comment-muted);
+  }
+
+  .wl-panel {
+    margin: 0;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 12px;
+    background: var(--wl-comment-card-bg);
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .wl-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    margin: 12px 12px 0;
+    padding: 2px 16px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 999px;
+    background: var(--wl-comment-input-bg);
+    min-height: 40px;
+  }
+
+  .wl-header label {
+    display: none;
+  }
+
+  .wl-header-item {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    border: none !important;
+  }
+
+  .wl-header-1 .wl-header-item {
+    width: 100%;
+  }
+
+  .wl-header-2 .wl-header-item,
+  .wl-header-3 .wl-header-item {
+    width: auto;
+    flex: 1;
+  }
+
+  .wl-header-3 .wl-header-item:nth-child(1) {
+    flex: 0 1 auto;
+    max-width: 26%;
+    min-width: 52px;
+  }
+
+  .wl-header-3 .wl-header-item:nth-child(2) {
+    flex: 1.15 1 0;
+  }
+
+  .wl-header-3 .wl-header-item:nth-child(3) {
+    flex: 1.25 1 0;
+  }
+
+  .wl-header-item:not(:last-child)::after {
+    content: '·';
+    flex-shrink: 0;
+    margin-inline: 6px;
+    color: var(--wl-comment-muted);
+    font-size: 14px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .wl-header input {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 2px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--wl-comment-text);
+    outline: none;
+  }
+
+  .wl-header input::placeholder {
+    color: #c0c4cc;
+  }
+
+  .wl-editor {
+    width: calc(100% - 24px);
+    min-height: 120px;
+    margin: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 12px;
+    background: var(--wl-comment-input-bg);
+    font-size: 14px;
+    line-height: 1.65;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+  }
+
+  .wl-editor:focus {
+    border-color: #c0c4cc;
+    background: var(--wl-comment-input-bg);
+  }
+
+  .wl-footer {
+    position: relative;
+    overflow: visible;
+    margin: 0 12px 12px;
+    align-items: center;
+  }
+
+  .wl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .wl-info .wl-text-number {
+    color: var(--wl-comment-muted);
+    font-size: 12px;
+  }
+
+  .wl-footer .wl-btn {
+    border-radius: 999px;
+    font-size: 14px;
+    padding: 0.45em 1.2em;
+  }
+
+  .wl-footer .wl-btn.primary {
+    background: var(--sakura-color-primary, #fe9500);
+    border-color: var(--sakura-color-primary, #fe9500);
+    color: #fff;
+  }
+
+  .wl-footer .wl-btn.primary:hover,
+  .wl-footer .wl-btn.primary:active {
+    background: var(--va-c-primary-dark, #e68600);
+    border-color: var(--va-c-primary-dark, #e68600);
+    color: #fff;
+  }
+
+  .wl-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 2px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--wl-comment-muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover,
+    &.active {
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-emoji-popup,
+  .wl-gif-popup {
+    position: absolute;
+    inset-inline-start: 0;
+    top: calc(100% + 6px);
+    z-index: 30;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 10px;
+    background: var(--wl-comment-card-bg);
+    box-shadow: var(--waline-box-shadow);
+  }
+
+  .wl-emoji-popup.display {
+    display: block;
+  }
+
+  .wl-emoji-popup .wl-tab-wrapper {
+    max-height: 160px;
+    padding: 8px;
+  }
+
+  .wl-emoji-popup button {
+    width: 2em;
+    margin: 0.125em;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    line-height: 2;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--waline-bg-color-hover);
+    }
+  }
+
+  .wl-emoji-popup .wl-emoji {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 1.5em;
+    max-height: 1.5em;
+  }
+
+  .wl-emoji-popup .wl-emoji-preview {
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .wl-emoji-popup .wl-tabs {
+    padding: 0 8px;
+    border-top: 1px solid var(--wl-comment-input-border);
+  }
+
+  .wl-emoji-popup .wl-tab.active {
+    border-color: var(--wl-comment-input-border);
+    background: var(--wl-comment-card-bg);
+    color: var(--sakura-color-primary, #fe9500);
+  }
+
+  .wl-gif-popup {
+    padding: 10px 10px 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  }
+
+  .wl-gif-popup.display {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .wl-gif-popup input {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-gif-popup img {
+    border-color: var(--wl-comment-input-border);
+  }
+
+  /* ---------- 评论列表标题 ---------- */
+  .wl-count {
+    margin-bottom: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--wl-comment-text);
+  }
+
+  /* ---------- 主评论卡片 ---------- */
+  .wl-cards > .wl-card-item {
+    margin-top: 12px;
+    padding: 12px 16px 8px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 12px;
+    background: var(--wl-comment-card-bg);
+    align-items: flex-start;
+    box-shadow: none;
+  }
+
+  .wl-cards > .wl-card-item:first-child {
+    margin-top: 0;
+  }
+
+  .wl-cards .wl-user {
+    margin-inline-end: var(--wl-comment-avatar-gap);
+    flex-shrink: 0;
+  }
+
+  .wl-cards .wl-user .wl-user-avatar,
+  .wl-cards .wl-user .wl-avatar {
+    width: var(--wl-comment-avatar-size);
+    height: var(--wl-comment-avatar-size);
+    border: none;
+    border-radius: 50%;
+    background: var(--wl-comment-badge-bg);
+    overflow: hidden;
+  }
+
+  .wl-cards .wl-user .wl-user-avatar img,
+  .wl-cards .wl-user .wl-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wl-cards > .wl-card-item > .wl-card {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-inline-start: 0 !important;
+  }
+
+  .wl-card .wl-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .wl-card .wl-nick {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--wl-comment-text);
+    text-decoration: none;
+  }
+
+  .wl-card span.wl-nick {
+    color: var(--wl-comment-text);
+  }
+
+  .wl-card .wl-badge {
+    margin-inline-end: 0;
+    padding: 1px 8px;
+    border-radius: 6px;
+    border: none;
+    background: var(--wl-comment-badge-bg);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .wl-card .wl-time {
+    color: var(--wl-comment-muted);
+    font-size: 13px;
+
+    &::before {
+      content: '·';
+      margin-inline: 2px 6px;
+      color: #c0c4cc;
+    }
+  }
+
+  .wl-card .wl-meta {
+    display: none;
+  }
+
+  .wl-card .wl-content {
+    position: relative;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-top: 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--wl-comment-text);
+    word-break: break-word;
+  }
+
+  .wl-card .wl-content.expand {
+    overflow: hidden;
+    max-height: calc(var(--wl-comment-collapse-lines) * 1.7em);
+    cursor: pointer;
+  }
+
+  .wl-card .wl-content.expand::before {
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--wl-comment-card-bg)
+    );
+  }
+
+  .wl-card .wl-content.expand::after {
+    background: color-mix(in srgb, var(--wl-comment-card-bg) 92%, transparent);
+    color: var(--wl-comment-muted);
+  }
+
+  .wl-content-toggle {
+    display: block;
+    width: 100%;
+    margin: 4px 0 0;
+    padding: 4px 0 0;
+    border: none;
+    background: transparent;
+    color: var(--wl-comment-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-card .wl-content .wl-reply-to {
+    display: block;
+    float: none;
+    margin: 0 0 6px;
+    line-height: 1.5;
+
+    span {
+      display: none;
+    }
+  }
+
+  .wl-card .wl-comment-actions {
+    float: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  .wl-card .wl-delete,
+  .wl-card .wl-like,
+  .wl-card .wl-reply,
+  .wl-card .wl-edit,
+  .wl-card .wl-rss {
+    color: var(--wl-comment-muted);
+    font-size: 13px;
+
+    &:hover,
+    &.active {
+      color: var(--wl-comment-muted);
+    }
+  }
+
+  .wl-card .wl-like.active,
+  .wl-card .wl-reply.active {
+    color: var(--wl-comment-badge-bg);
+  }
+
+  /* ---------- 管理员审核操作 ---------- */
+  .wl-card .wl-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 10px 0 2px;
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .wl-card .wl-comment-status {
+    display: inline-flex;
+    align-items: stretch;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px var(--wl-comment-input-border);
+  }
+
+  .wl-card .wl-comment-status .wl-btn {
+    min-width: 0;
+    margin: 0;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 0;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:not(:last-child) {
+      border-inline-end: 1px solid var(--wl-comment-input-border);
+    }
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 10%, var(--wl-comment-input-bg));
+      color: var(--sakura-color-primary, #fe9500);
+    }
+
+    &:disabled {
+      background: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 14%, var(--wl-comment-input-bg));
+      color: var(--sakura-color-primary, #fe9500);
+      opacity: 1;
+      cursor: default;
+    }
+  }
+
+  .wl-card .wl-admin-actions > .wl-btn.wl-sticky {
+    min-width: 0;
+    margin: 0;
+    padding: 6px 12px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--sakura-color-primary, #fe9500);
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  /* 卡片内回复输入框：与 Twikoo 一致，不重复头像 */
+  .wl-card > .wl-panel {
+    margin-top: 12px;
+    width: 100%;
+    overflow: visible;
+  }
+
+  /* ---------- 嵌套回复：与主评论左右对齐，不做左侧缩进 ---------- */
+  .wl-card > .wl-quote {
+    margin: 10px 0 0;
+    padding: 0;
+    border: none;
+    margin-left: calc(-1 * (var(--wl-comment-avatar-size) + var(--wl-comment-avatar-gap)));
+    width: calc(100% + var(--wl-comment-avatar-size) + var(--wl-comment-avatar-gap));
+    max-width: none;
+    box-sizing: border-box;
+  }
+
+  .wl-quote > .wl-card-item {
+    margin-top: 10px;
+    padding: 12px 16px 8px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 12px;
+    background: var(--wl-comment-card-bg);
+    align-items: flex-start;
+    margin-inline-start: 0;
+  }
+
+  .wl-quote > .wl-card-item:first-child {
+    margin-top: 0;
+  }
+
+  .wl-quote .wl-user {
+    margin-inline-end: var(--wl-reply-avatar-gap);
+  }
+
+  .wl-quote .wl-user .wl-user-avatar,
+  .wl-quote .wl-user .wl-avatar {
+    width: var(--wl-reply-avatar-size);
+    height: var(--wl-reply-avatar-size);
+  }
+
+  .wl-quote .wl-card {
+    margin-inline-start: 0 !important;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .wl-quote .wl-nick {
+    font-size: 14px;
+  }
+
+  .wl-quote .wl-content {
+    font-size: 15px;
+  }
+
+  /* 回复的回复：继续向左对齐，不叠加缩进 */
+  .wl-quote .wl-card > .wl-quote {
+    margin-left: calc(-1 * (var(--wl-reply-avatar-size) + var(--wl-reply-avatar-gap)));
+    width: calc(100% + var(--wl-reply-avatar-size) + var(--wl-reply-avatar-gap));
+  }
+
+  .wl-power {
+    color: var(--wl-comment-muted);
+  }
+
+  a {
+    color: var(--sakura-color-primary, #fe9500);
+
+    &:hover {
+      color: var(--va-c-primary-dark, #e68600);
+    }
+  }
+}
+
+html.dark .sakura-comment [data-waline],
+html.dark .sakura-comment .waline,
+html.dark .moment-comment-host [data-waline],
+html.dark .moment-comment-host .waline,
+html.dark .sakura-waline[data-waline] {
+  --wl-comment-input-border: var(--sakura-color-divider, rgba(255, 255, 255, 0.18));
+  --wl-comment-input-bg: var(--sakura-color-background);
+  --wl-comment-muted: var(--sakura-color-text-muted);
+  --wl-comment-text: var(--sakura-color-text-deep);
+  --wl-comment-card-bg: var(--sakura-post-card-bg);
+  --wl-comment-badge-bg: #5b9bd5;
+
+  --waline-bg-color: var(--wl-comment-card-bg);
+  --waline-bg-color-light: var(--wl-comment-input-bg);
+  --waline-border-color: var(--wl-comment-input-border);
+  --waline-color: var(--wl-comment-text);
+
+  .wl-header input::placeholder {
+    color: var(--wl-comment-muted);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .sakura-comment [data-waline],
+  .sakura-comment .waline,
+  .moment-comment-host [data-waline],
+  .moment-comment-host .waline,
+  .sakura-waline[data-waline] {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    --wl-comment-avatar-size: 36px;
+    --wl-comment-avatar-gap: 8px;
+    --wl-reply-avatar-size: 28px;
+    --wl-reply-avatar-gap: 8px;
+
+    .wl-header {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .wl-header-3 .wl-header-item:nth-child(1),
+    .wl-header-3 .wl-header-item:nth-child(2),
+    .wl-header-3 .wl-header-item:nth-child(3) {
+      flex: none;
+      width: 100%;
+      max-width: none;
+    }
+
+    .wl-header-item:not(:last-child)::after {
+      display: none;
+    }
+
+    .wl-header-item:not(:last-child) {
+      border-bottom: 1px solid var(--wl-comment-input-border);
+      padding-bottom: 2px;
+      margin-bottom: 2px;
+    }
+
+    .wl-cards {
+      overflow-x: clip;
+    }
+
+    .wl-cards > .wl-card-item,
+    .wl-quote > .wl-card-item {
+      padding: 10px 10px 8px;
+      border-radius: 10px;
+    }
+
+    .wl-editor {
+      width: calc(100% - 20px);
+      margin: 10px;
+    }
+
+    .wl-footer {
+      margin: 0 10px 10px;
+    }
+  }
+}

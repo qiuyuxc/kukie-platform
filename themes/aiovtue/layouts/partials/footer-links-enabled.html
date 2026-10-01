@@ -1,0 +1,5 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.links "footerenable" -}}
+  {{- $enabled = site.Params.links.footerenable -}}
+{{- end -}}
+{{- return $enabled -}}

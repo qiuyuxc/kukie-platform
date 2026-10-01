@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{- partial "toc-detect.html" . -}}
+{{- $hasToc := .Scratch.Get "hasToc" -}}
+<article class="sakura-page sakura-post sakura-post-page">
+  {{- partial "post-header.html" . -}}
+  <div class="sakura-triple-columns-base sakura-triple-columns{{ if not $hasToc }} sakura-triple-columns--no-toc{{ end }}">
+    <aside class="sakura-post-aside-left" aria-hidden="true"></aside>
+    <div class="sakura-post-main">
+      <div class="sakura-page-content sakura-post-body">
+        {{- partial "post-ai-summary.html" . -}}
+        {{- partial "post-content.html" . -}}
+        {{- partial "sponsor.html" . -}}
+        {{- partial "post-copyright.html" . -}}
+        <div class="sakura-post-nav-before-comment">
+          {{- partial "post-nav.html" . -}}
+        </div>
+        {{ if ne .Params.comment false }}
+        {{- partial "comment-section.html" . -}}
+        {{ end }}
+      </div>
+    </div>
+    {{ if $hasToc }}
+    <aside class="sakura-aside sakura-post-toc">
+      {{- partial "toc.html" . -}}
+    </aside>
+    {{ end }}
+  </div>
+</article>
+{{ end }}

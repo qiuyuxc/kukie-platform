@@ -1,0 +1,15 @@
+{{- $page := . -}}
+{{- if eq $page.Params.comment false -}}
+  {{- return -}}
+{{- end -}}
+{{- $commentId := $page.File.UniqueID -}}
+<button
+  type="button"
+  class="moment-comment-toggle"
+  data-comment-id="{{ $commentId }}"
+  aria-expanded="false"
+  aria-controls="moment-comment-{{ $commentId }}"
+>
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m0 14H6l-2 2V4h16v12z"/></svg>
+  <span>评论</span>
+</button>

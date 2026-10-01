@@ -1,0 +1,60 @@
+{{- $loader := .Site.Params.loader | default dict -}}
+{{- if default true $loader.enable -}}
+{{- $avatar := .Site.Params.author.avatar | default (.Site.Params.favicon | default `/favicon.png`) -}}
+{{- $loaderText := .Site.Title -}}
+<script>
+;(function () {
+  if (!document.documentElement.classList.contains('sakura-skip-loader')) return
+  document.body.classList.remove('sakura-loading')
+})()
+</script>
+<template id="va-fouc-loader-template">
+<div id="va-fouc-loader" aria-hidden="true">
+  <div class="va-fouc-loader__panel">
+    <div id="va-fouc-loader__spinner">
+      <div id="va-fouc-loader__ring"></div>
+      {{- with $avatar }}
+      {{- partial "author-avatar.html" (dict
+        "src" .
+        "id" "va-fouc-loader__avatar"
+        "alt" ""
+        "play" true
+        "loading" "eager"
+        "onerrorRemove" true
+      ) -}}
+      {{- end }}
+    </div>
+    <div id="va-fouc-loader__dots"><span></span><span></span><span></span></div>
+    <div id="va-fouc-loader__text">{{ $loaderText }}</div>
+  </div>
+</div>
+</template>
+<script>
+;(function () {
+  if (document.documentElement.classList.contains('sakura-skip-loader')) {
+    var tpl = document.getElementById('va-fouc-loader-template')
+    if (tpl) tpl.remove()
+    return
+  }
+  var tpl = document.getElementById('va-fouc-loader-template')
+  if (!tpl || !tpl.content.firstElementChild) return
+  document.body.insertBefore(tpl.content.firstElementChild.cloneNode(true), document.body.firstChild)
+  tpl.remove()
+  if (window.visualViewport) {
+    var loader = document.getElementById('va-fouc-loader')
+    if (!loader) return
+    var sync = function () {
+      var vv = window.visualViewport
+      if (!vv) return
+      loader.style.top = vv.offsetTop + 'px'
+      loader.style.left = vv.offsetLeft + 'px'
+      loader.style.width = vv.width + 'px'
+      loader.style.height = vv.height + 'px'
+    }
+    sync()
+    window.visualViewport.addEventListener('resize', sync)
+    window.visualViewport.addEventListener('scroll', sync)
+  }
+})()
+</script>
+{{- end -}}

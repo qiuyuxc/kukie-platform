@@ -1,0 +1,15 @@
+<header class="sakura-page-header{{ with .Params.cover }} has-cover{{ end }}">
+  {{- partial "cover-media.html" (dict "cover" .Params.cover "title" .Title "coverClass" "sakura-page-header__cover" "loading" "eager") -}}
+  <div class="sakura-page-header__inner sakura-safe-padding">
+    <h1 class="sakura-page-header__title">
+      <span class="sakura-header-title">
+        <span class="sakura-page-header__text sakura-title">{{ .Title }}</span>
+      </span>
+    </h1>
+    {{ if and (not .IsSection) (ne .Params.source "webdav") }}
+      {{ with .Params.photos }}
+      <p class="sakura-page-header__desc">相册共有 {{ len . }} 张照片</p>
+      {{ end }}
+    {{ end }}
+  </div>
+</header>

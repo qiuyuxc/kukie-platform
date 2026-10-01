@@ -1,0 +1,8 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.effects "enable" -}}
+  {{- $enabled = site.Params.effects.enable -}}
+{{- end -}}
+{{- if isset .Params "effects" -}}
+  {{- $enabled = .Params.effects -}}
+{{- end -}}
+{{- return $enabled -}}

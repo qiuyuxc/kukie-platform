@@ -1,0 +1,75 @@
+{{- $posts := where .Site.RegularPages "Section" "posts" -}}
+{{- $posts = partial "posts-sorted.html" (dict "Pages" $posts) -}}
+{{- if gt (len $posts) 0 -}}
+{{- $data := slice -}}
+{{- range $posts -}}
+  {{- $cats := slice -}}
+  {{- range (.GetTerms "categories") -}}{{- $cats = $cats | append .Data.Term -}}{{- end -}}
+  {{- if not $cats -}}{{- $cats = .Params.categories | default slice -}}{{- end -}}
+  {{- $tags := slice -}}
+  {{- range (.GetTerms "tags") -}}{{- $tags = $tags | append .Data.Term -}}{{- end -}}
+  {{- if not $tags -}}{{- $tags = .Params.tags | default slice -}}{{- end -}}
+  {{- $data = $data | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "cover" (partial "post-cover.html" .)
+    "excerpt" (.Description | default .Summary | plainify | truncate 120)
+    "date" (.Date.Format "2006-01-02")
+    "categories" $cats
+    "tags" $tags
+  ) -}}
+{{- end -}}
+{{- $first := index $data 0 -}}
+<section class="notice-board-wrap" data-interval="{{ .Site.Params.notice.rotateInterval | default 5000 }}">
+  <aside class="notice-board-wrap__notice">
+    <h3 class="notice-board__title">{{ .Site.Params.notice.title }}</h3>
+    {{ range .Site.Params.notice.sections }}
+    <div class="notice-board__section">
+      <p class="notice-board__label">{{ .label }}</p>
+      <ul>
+        {{ range .lines }}
+        {{- partial "notice-board-line.html" . -}}
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+  </aside>
+  <div class="notice-board-wrap__article" id="notice-article">
+    <a class="notice-board-wrap__article-link" href="{{ index $first "url" }}" aria-label="查看文章：{{ index $first "title" }}"></a>
+    <div class="notice-board-wrap__cover-col">
+      <div class="notice-board-wrap__dots" role="tablist" aria-label="文章切换">
+        <div class="notice-board-wrap__dot-center" aria-hidden="true"></div>
+        <div class="notice-board-wrap__dots-track">
+          {{ range $dot := seq 5 }}
+          <button type="button" class="notice-board-wrap__dot{{ if eq $dot 3 }} is-active{{ end }}" data-offset="{{ sub $dot 3 }}" role="tab" aria-label="切换文章"></button>
+          {{ end }}
+        </div>
+      </div>
+      <div class="notice-board-wrap__cover-frame">
+        <div class="notice-board-wrap__cover">
+          {{- partial "cover-list-media.html" (dict "cover" (index $first "cover") "title" (index $first "title") "class" "sakura-lazy-img" "loading" "eager") -}}
+        </div>
+      </div>
+    </div>
+    <div class="notice-board-wrap__meta-col">
+      <div class="notice-board-wrap__meta">
+        <time class="notice-board-wrap__date" datetime="{{ index $first "date" }}">{{ index $first "date" }}</time>
+        <h2 class="notice-board-wrap__post-heading">{{ index $first "title" }}</h2>
+        {{ $catText := "" }}{{ with index $first "categories" }}{{ if reflect.IsSlice . }}{{ $catText = delimit . " / " }}{{ else }}{{ $catText = . }}{{ end }}{{ end }}
+        {{ $tagText := "" }}{{ with index $first "tags" }}{{ if reflect.IsSlice . }}{{ $tagText = delimit . " · " }}{{ else }}{{ $tagText = . }}{{ end }}{{ end }}
+        {{ if or $catText $tagText }}
+        <p class="notice-board-wrap__meta-line">
+          {{ with $catText }}<span class="notice-board-wrap__meta-item">{{ . }}</span>{{ end }}
+          {{ if and $catText $tagText }}<span class="notice-board-wrap__meta-sep">·</span>{{ end }}
+          {{ with $tagText }}<span class="notice-board-wrap__meta-item">{{ . }}</span>{{ end }}
+        </p>
+        {{ end }}
+        <div class="notice-board-wrap__excerpt-slot">
+          <p class="notice-board-wrap__excerpt">{{ index $first "excerpt" }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script type="application/json" id="notice-posts-data">{{ $data | jsonify | safeHTML }}</script>
+{{- end -}}

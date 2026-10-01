@@ -1,0 +1,36 @@
+{{- $page := . -}}
+{{- $raw := $page.RawContent -}}
+{{- $intro := "" -}}
+{{- $slides := slice -}}
+
+{{- $sanitized := $raw -}}
+{{- range findRE "(?s)```[\\s\\S]*?```" $raw -}}
+  {{- $sanitized = replace $sanitized . "" 1 -}}
+{{- end -}}
+{{- range findRE "`[^`]+`" $sanitized -}}
+  {{- $sanitized = replace $sanitized . "" 1 -}}
+{{- end -}}
+
+{{- if strings.Contains $sanitized "![" -}}
+  {{- $parts := split $sanitized "![" -}}
+  {{- $intro = index $parts 0 | strings.TrimSpace -}}
+  {{- range $i, $part := $parts -}}
+    {{- if eq $i 0 -}}{{- continue -}}{{- end -}}
+    {{- $alt := replaceRE `^([^\]]*)\]\(([^)]+)\)([\s\S]*)` "$1" $part -}}
+    {{- $url := replaceRE `^([^\]]*)\]\(([^)]+)\)([\s\S]*)` "$2" $part | strings.TrimSpace -}}
+    {{- $caption := replaceRE `^([^\]]*)\]\(([^)]+)\)([\s\S]*)` "$3" $part | strings.TrimSpace -}}
+    {{- $lower := lower $url -}}
+    {{- $isMedia := and $url (gt (len (findRE `\.(jpg|jpeg|png|gif|webp|svg|avif|bmp|ico|mp4|webm|ogg)(\?|#|$)` $lower)) 0) -}}
+    {{- if $isMedia -}}
+      {{- $slides = $slides | append (dict "alt" $alt "url" $url "caption" $caption) -}}
+    {{- else if gt (len $slides) 0 -}}
+      {{- $last := index $slides (sub (len $slides) 1) -}}
+      {{- $merged := printf "%s\n![%s" ($last.caption | default "") $part | strings.TrimSpace -}}
+      {{- $slides = $slides | first (sub (len $slides) 1) | append (merge $last (dict "caption" $merged)) -}}
+    {{- else -}}
+      {{- $intro = printf "%s\n![%s" $intro $part | strings.TrimSpace -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return dict "intro" $intro "slides" $slides -}}

@@ -1,0 +1,51 @@
+{{- $items := .items | default slice -}}
+{{- $empty := default "暂无数据" .empty -}}
+{{- if gt (len $items) 0 -}}
+<ul class="bangumi-grid">
+  {{- range $items -}}
+  {{- $item := . -}}
+  <li class="bangumi-card">
+    <article class="bangumi-card__inner">
+      <a class="bangumi-card__cover-link" href="{{ $item.url }}" target="_blank" rel="noopener" aria-label="{{ $item.title }}">
+        <div class="bangumi-card__cover">
+          {{- with $item.cover -}}
+          <img src="{{ . }}" alt="" loading="lazy" decoding="async" width="96" height="128" referrerpolicy="no-referrer">
+          {{- end -}}
+        </div>
+      </a>
+      <div class="bangumi-card__body">
+        <h3 class="bangumi-card__title">
+          <a href="{{ $item.url }}" target="_blank" rel="noopener">{{ $item.title }}</a>
+        </h3>
+        <div class="bangumi-card__metrics">
+          <div class="bangumi-card__metrics-stats">
+            <div class="bangumi-card__stat">
+              <span class="bangumi-card__stat-label">评分</span>
+              <span class="bangumi-card__stat-value">
+                {{- if $item.score -}}{{ printf "%.1f" $item.score }}{{- else -}}-{{- end -}}
+              </span>
+            </div>
+            <div class="bangumi-card__stat">
+              <span class="bangumi-card__stat-label">播放量</span>
+              <span class="bangumi-card__stat-value">{{ default "-" $item.view }}</span>
+            </div>
+            <div class="bangumi-card__stat">
+              <span class="bangumi-card__stat-label">追番数</span>
+              <span class="bangumi-card__stat-value">{{ default "-" $item.follow }}</span>
+            </div>
+          </div>
+          {{- with $item.totalCount -}}
+          <p class="bangumi-card__episodes">{{ . }}</p>
+          {{- else -}}
+            {{- with $item.newEp -}}<p class="bangumi-card__episodes">{{ . }}</p>{{- end -}}
+          {{- end -}}
+        </div>
+        {{- with $item.summary -}}<p class="bangumi-card__summary">{{ . }}</p>{{- end -}}
+      </div>
+    </article>
+  </li>
+  {{- end -}}
+</ul>
+{{- else -}}
+<p class="bangumi-grid__empty">{{ $empty }}</p>
+{{- end -}}

@@ -1,0 +1,40 @@
+{{- $pjax := .Site.Params.pjax | default dict -}}
+{{- if and $pjax.enable (default true $pjax.loader) -}}
+{{- $ecgDuration := default 1350 $pjax.loaderDuration -}}
+<div id="sakura-pjax-loader" class="is-hidden" hidden role="status" aria-hidden="true" aria-live="polite" aria-label="页面加载中" style="--sakura-pjax-ecg-duration: {{ $ecgDuration }}ms">
+  <div class="sakura-pjax-loader__panel">
+    <div class="sakura-pjax-loader__ecg-viewport">
+      <svg class="sakura-pjax-loader__ecg" viewBox="0 0 80 56" preserveAspectRatio="xMidYMid meet" focusable="false" aria-hidden="true">
+        <defs>
+          <clipPath id="sakura-pjax-ecg-clip">
+            <rect x="0" y="0" width="80" height="56" />
+          </clipPath>
+          <linearGradient id="sakura-pjax-ecg-fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="80" y2="0">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0" />
+            <stop offset="20%" stop-color="#fff" stop-opacity="0.3" />
+            <stop offset="45%" stop-color="#fff" stop-opacity="1" />
+            <stop offset="100%" stop-color="#fff" stop-opacity="1" />
+          </linearGradient>
+          <mask id="sakura-pjax-ecg-mask">
+            <rect x="0" y="0" width="80" height="56" fill="url(#sakura-pjax-ecg-fade)" />
+          </mask>
+          {{- /* 以 x=40 对称：左右各 30 单位基线，P/T 波镜像，QRS 居中 */ -}}
+          {{- $beat := "M0,28 H30 L31,24 L33,28 H36 L37,33 L38,5 L42,45 L45,28 H47 L48,24 L50,28 H80" -}}
+          <path id="sakura-pjax-ecg-beat" pathLength="80" d="{{ $beat }}" />
+        </defs>
+        <g clip-path="url(#sakura-pjax-ecg-clip)">
+          <g class="sakura-pjax-loader__ecg-grid" aria-hidden="true">
+            <line x1="0" y1="12" x2="80" y2="12" />
+            <line x1="0" y1="28" x2="80" y2="28" />
+            <line x1="0" y1="44" x2="80" y2="44" />
+          </g>
+          <g class="sakura-pjax-loader__ecg-trace" mask="url(#sakura-pjax-ecg-mask)">
+            <use href="#sakura-pjax-ecg-beat" class="sakura-pjax-loader__ecg-glow" />
+            <use href="#sakura-pjax-ecg-beat" class="sakura-pjax-loader__ecg-line" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+{{- end -}}

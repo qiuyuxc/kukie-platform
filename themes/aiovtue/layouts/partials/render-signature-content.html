@@ -1,0 +1,11 @@
+{{- $prose := partial "signature-prose-args.html" . -}}
+{{- $sig := partial "signature-inline.html" $prose -}}
+{{- $sigPrimary := partial "signature-inline.html" (merge $prose (dict "primary" true)) -}}
+{{- $placeholder := "§§SAKURA_SIGNATURE_LITERAL§§" -}}
+{{- $placeholderPrimary := "§§SAKURA_SIGNATURE_PRIMARY_LITERAL§§" -}}
+{{- $content := partial "signature-protect-literals.html" (dict "content" .content "ph" $placeholder "phPrimary" $placeholderPrimary) -}}
+{{- $content = replace $content "![签名]" $sigPrimary -}}
+{{- $content = replace $content "[签名]" $sig -}}
+{{- $content = replace $content $placeholderPrimary "![签名]" -}}
+{{- $content = replace $content $placeholder "[签名]" -}}
+{{- return $content -}}

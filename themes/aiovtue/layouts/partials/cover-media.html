@@ -1,0 +1,44 @@
+{{- $cover := strings.TrimSpace (.cover | default "") -}}
+{{- if $cover -}}
+  {{- if not (or (hasPrefix $cover "http://") (hasPrefix $cover "https://") (hasPrefix $cover "//")) -}}
+    {{- if not (hasPrefix $cover "/") -}}
+      {{- $cover = printf "/%s" $cover -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $src := $cover -}}
+  {{- if not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//")) -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+  {{- $lower := lower $cover -}}
+  {{- $isVideo := or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg") -}}
+  {{- $coverClass := .coverClass | default "sakura-page-header__cover" -}}
+  {{- $loading := .loading | default "lazy" -}}
+  {{- $lazyClass := cond (default false .noLazyClass) "" "sakura-lazy-img" -}}
+  {{- $imgClasses := $coverClass -}}
+  {{- if $lazyClass -}}
+    {{- $imgClasses = printf "%s %s" $lazyClass $coverClass -}}
+  {{- end -}}
+  {{- $fetchPriority := .fetchPriority | default "" -}}
+  {{- if $isVideo -}}
+  <video
+    class="{{ $coverClass }}"
+    src="{{ $src }}"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    disablepictureinpicture
+    aria-hidden="true"
+  ></video>
+  {{- else -}}
+  <img
+    class="{{ $imgClasses }}"
+    src="{{ $src }}"
+    alt="{{ .title | default "" }}"
+    loading="{{ $loading }}"
+    decoding="async"
+    {{- with $fetchPriority }} fetchpriority="{{ . }}"{{ end -}}
+  >
+  {{- end -}}
+{{- end -}}

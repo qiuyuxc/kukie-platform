@@ -1,0 +1,20 @@
+# =============================================================================
+# 友链数据（友链页 /links/ 读取此文件）
+# 页面壳子在 content/links.md，卡片内容在此维护
+# 参考格式：
+#   linkGroups:
+#     - name: 分组名
+#       type: simple            # simple：长条样式 | preview：截图样式
+#       links:
+#         - url: https://example.com
+#           avatar: https://example.com/avatar.png
+#           name: 站点名
+#           blog: 站点名
+#           desc: 一句话描述
+#           color: "#6b8cff"
+# =============================================================================
+
+title: "友链"
+cover: "/hero/tt3.png"
+
+linkGroups: []

@@ -1,0 +1,452 @@
+.sakura-music {
+  --sakura-music-size: 44px;
+  --sakura-music-gap: 10px;
+  --sakura-music-edge-x: #{unquote("max(16px, env(safe-area-inset-left, 0px))")};
+  --sakura-music-edge-y: #{unquote("max(20px, env(safe-area-inset-bottom, 0px))")};
+  --sakura-music-edge-peek: 8px;
+  --sakura-music-edge-hit: 32px;
+  --sakura-music-strip-width: 7px;
+  --sakura-music-strip-height: 56px;
+  --sakura-music-strip-radius: 10px;
+  position: fixed;
+  z-index: 200;
+  display: block;
+  pointer-events: none;
+
+  &--left {
+    left: var(--sakura-music-edge-x);
+    right: auto;
+    bottom: var(--sakura-music-edge-y);
+  }
+
+  &--right {
+    left: auto;
+    right: var(--sakura-music-edge-x);
+    bottom: var(--sakura-music-edge-y);
+    --sakura-music-edge-x: #{unquote("max(16px, env(safe-area-inset-right, 0px))")};
+  }
+
+  &.is-edge-dock {
+    &.sakura-music--left:not(.is-custom-position) {
+      left: env(safe-area-inset-left, 0px);
+    }
+
+    &.sakura-music--right:not(.is-custom-position) {
+      right: env(safe-area-inset-right, 0px);
+    }
+
+    &.sakura-music--left::before,
+    &.sakura-music--right::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      width: var(--sakura-music-edge-hit);
+      height: calc(var(--sakura-music-strip-height) + var(--sakura-music-edge-y));
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    &.sakura-music--left::before {
+      left: 0;
+    }
+
+    &.sakura-music--right::before {
+      right: 0;
+    }
+
+    &:not(.is-edge-expanded):not(.is-open):not(.is-dragging) {
+      .sakura-music__toggle {
+        width: var(--sakura-music-strip-width);
+        height: var(--sakura-music-strip-height);
+        border-radius: 0;
+        transform: none;
+        color: #fff;
+        background: var(--va-c-primary);
+        box-shadow: none;
+
+        .sakura-music__toggle-disc {
+          opacity: 0;
+          transform: scale(0);
+          width: 0;
+          height: 0;
+          overflow: hidden;
+        }
+
+        &::after {
+          font-size: 8px;
+          font-weight: 700;
+          line-height: 1;
+          color: #fff;
+          pointer-events: none;
+        }
+      }
+
+      &.sakura-music--left .sakura-music__toggle {
+        border-radius: 0 var(--sakura-music-strip-radius) var(--sakura-music-strip-radius) 0;
+
+        &::after {
+          content: ">";
+        }
+      }
+
+      &.sakura-music--right .sakura-music__toggle {
+        border-radius: var(--sakura-music-strip-radius) 0 0 var(--sakura-music-strip-radius);
+
+        &::after {
+          content: "<";
+        }
+      }
+    }
+
+    &.is-edge-expanded .sakura-music__toggle,
+    &.is-open .sakura-music__toggle,
+    &.is-dragging .sakura-music__toggle,
+    &:hover .sakura-music__toggle,
+    &:focus-within .sakura-music__toggle {
+      width: var(--sakura-music-size);
+      height: var(--sakura-music-size);
+      border-radius: 50%;
+      transform: translateX(0);
+      color: var(--va-c-primary-dark);
+      background: var(--sakura-color-background);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      animation: none;
+
+      &::after {
+        content: none;
+      }
+
+      .sakura-music__toggle-disc {
+        opacity: 1;
+        transform: none;
+        width: auto;
+        height: auto;
+        overflow: visible;
+      }
+    }
+  }
+
+  &.is-custom-position {
+    right: auto;
+    bottom: auto;
+  }
+
+  &.is-edge-dock .sakura-music__toggle {
+    transition:
+      width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.28s ease,
+      color 0.2s ease,
+      box-shadow 0.28s ease;
+
+    .sakura-music__toggle-disc {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+  }
+
+  &.is-dragging {
+    cursor: grabbing;
+
+    .sakura-music__toggle {
+      cursor: grabbing;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  &[data-draggable="true"] .sakura-music__toggle {
+    cursor: grab;
+  }
+
+  &.is-open .sakura-music__toggle {
+    background: var(--va-c-primary);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(var(--va-c-primary-rgb), 0.45);
+  }
+
+  &.is-playing .sakura-music__toggle-disc {
+    animation: sakura-music-spin 6s linear infinite;
+  }
+}
+
+.sakura-music__toggle,
+.sakura-music__panel {
+  pointer-events: auto;
+}
+
+.sakura-music__toggle {
+  position: relative;
+  z-index: 2;
+  width: var(--sakura-music-size);
+  height: var(--sakura-music-size);
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--va-c-primary-dark);
+  background: var(--sakura-color-background);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+  &::after {
+    content: none;
+  }
+
+  .sakura-music.is-edge-dock:not(.is-edge-expanded):not(.is-open):not(:hover):not(:focus-within) & {
+    &:hover {
+      transform: inherit;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .sakura-music.is-edge-dock.is-edge-expanded &,
+  .sakura-music.is-edge-dock.is-open &,
+  .sakura-music.is-edge-dock:hover &,
+  .sakura-music.is-edge-dock:focus-within & {
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+  }
+}
+
+.sakura-music__toggle-disc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+
+  iconify-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+  }
+}
+
+.sakura-music__panel {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--sakura-music-size) + var(--sakura-music-gap));
+  transform: translateX(-50%);
+  width: #{"min(360px, calc(100vw - 32px))"};
+  border-radius: var(--sakura-radius);
+  overflow: hidden;
+  background: var(--sakura-color-background);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  display: none;
+
+  &.is-visible {
+    display: block;
+  }
+
+  &.is-fitted {
+    transition: top 0.28s ease, bottom 0.28s ease;
+  }
+}
+
+.sakura-music__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+.sakura-music__panel-title {
+  font-size: 0.8125rem;
+  color: var(--sakura-color-text-muted);
+}
+
+.sakura-music__panel-close {
+  border: none;
+  background: transparent;
+  color: var(--sakura-color-text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--va-c-primary-rgb), 0.12);
+    color: var(--va-c-primary-dark);
+  }
+
+  iconify-icon {
+    font-size: 1.25rem;
+  }
+}
+
+.sakura-music__meting-host {
+  width: 100%;
+  min-height: 120px;
+}
+
+.sakura-music__loading,
+.sakura-music__error {
+  margin: 0;
+  padding: 16px 12px 20px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--sakura-color-text-muted);
+}
+
+.sakura-music__error {
+  color: #c45c5c;
+}
+
+.sakura-music__meting-host meting-js {
+  display: block;
+  width: 100%;
+}
+
+.sakura-music__panel .aplayer {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-family: inherit;
+}
+
+.sakura-music__panel .aplayer-body {
+  width: 100% !important;
+}
+
+.sakura-music__panel .aplayer .aplayer-info {
+  border-bottom: none;
+  padding: 8px 12px 12px;
+}
+
+.sakura-music__panel .aplayer .aplayer-controller {
+  padding: 0 12px 12px;
+}
+
+.sakura-music__panel .aplayer .aplayer-list {
+  position: relative !important;
+  margin: 0 12px 12px;
+  border-radius: 8px;
+  max-height: 220px;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+
+.sakura-music__panel .aplayer .aplayer-list ol li {
+  border-top-color: var(--sakura-color-border);
+}
+
+.sakura-music__panel .aplayer .aplayer-list ol li:hover {
+  background: rgba(var(--va-c-primary-rgb), 0.08);
+}
+
+.sakura-music__panel .aplayer .aplayer-list ol li.aplayer-list-light {
+  background: rgba(var(--va-c-primary-rgb), 0.14);
+}
+
+.sakura-music__panel .aplayer .aplayer-info .aplayer-music .aplayer-title,
+.sakura-music__panel .aplayer .aplayer-info .aplayer-music .aplayer-author {
+  color: var(--sakura-color-text);
+}
+
+.sakura-music__panel .aplayer .aplayer-icon path {
+  fill: var(--sakura-color-text-muted);
+}
+
+.sakura-music__panel .aplayer .aplayer-icon:hover path {
+  fill: var(--va-c-primary-dark);
+}
+
+@keyframes sakura-music-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+html.dark {
+  .sakura-music__toggle {
+    background: #2a2a2a;
+    color: var(--va-c-primary-light);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .sakura-music.is-edge-dock:not(.is-edge-expanded):not(.is-open):not(.is-dragging) .sakura-music__toggle {
+    background: var(--va-c-primary);
+    box-shadow: none;
+  }
+
+  .sakura-music.is-edge-dock.is-edge-expanded .sakura-music__toggle,
+  .sakura-music.is-edge-dock.is-open .sakura-music__toggle,
+  .sakura-music.is-edge-dock:hover .sakura-music__toggle,
+  .sakura-music.is-edge-dock:focus-within .sakura-music__toggle {
+    background: #2a2a2a;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .sakura-music__panel {
+    background: #2a2a2a;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .sakura-music__panel .aplayer {
+    color: #e8e8e8;
+  }
+
+  .sakura-music__panel .aplayer .aplayer-list {
+    background: #1f1f1f;
+  }
+
+  .sakura-music__panel .aplayer .aplayer-info .aplayer-music .aplayer-title,
+  .sakura-music__panel .aplayer .aplayer-info .aplayer-music .aplayer-author {
+    color: #e8e8e8;
+  }
+}
+
+@media (max-width: 480px) {
+  .sakura-music {
+    --sakura-music-edge-x: #{unquote("max(12px, env(safe-area-inset-left, 0px))")};
+    --sakura-music-edge-y: #{unquote("max(16px, env(safe-area-inset-bottom, 0px))")};
+  }
+
+  .sakura-music--right {
+    --sakura-music-edge-x: #{unquote("max(12px, env(safe-area-inset-right, 0px))")};
+  }
+
+  .sakura-music__panel {
+    width: #{"min(340px, calc(100vw - 24px))"};
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-music.is-playing .sakura-music__toggle-disc {
+    animation: none;
+  }
+
+  .sakura-music.is-edge-dock .sakura-music__toggle {
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sakura-music__panel.is-fitted {
+    transition: none;
+  }
+
+  .sakura-music__panel .aplayer .aplayer-list {
+    transition: none;
+  }
+}

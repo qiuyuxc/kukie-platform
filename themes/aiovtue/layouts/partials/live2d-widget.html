@@ -1,0 +1,33 @@
+{{- if partial "live2d-enabled.html" . -}}
+{{- $live2d := .Site.Params.live2d | default dict -}}
+{{- $widget := $live2d.widget | default $live2d.api | default "https://live2d.kafuchino.top/" -}}
+{{- $apiPath := $live2d.apiPath | default "" -}}
+{{- $cdnPath := $live2d.cdnPath | default "" -}}
+{{- if and (not $cdnPath) (not $apiPath) -}}
+  {{- $cdnPath = $widget -}}
+{{- end -}}
+{{- $tools := $live2d.tools | default (slice "hitokoto" "asteroids" "switch-model" "switch-texture" "photo" "info" "quit") -}}
+<div
+  id="sakura-live2d"
+  class="sakura-live2d"
+  hidden
+  aria-hidden="true"
+  data-min-width="{{ default 768 $live2d.minWidth }}"
+  data-widget="{{ $widget }}"
+  {{- with $cdnPath -}}
+  {{- if not $apiPath -}}
+  data-cdn-path="{{ . }}"
+  {{- end -}}
+  {{- end -}}
+  {{- with $apiPath -}}
+  data-api-path="{{ . }}"
+  {{- end -}}
+  data-waifu-tips="{{ default `jsdelivr/sequential/waifu-tips.js` $live2d.waifuTips }}"
+  data-waifu-css="{{ default `css/left.css` $live2d.waifuCss }}"
+  data-waifu-path="{{ default `waifu-tips.json` $live2d.waifuTipsJson }}"
+  {{- if $live2d.drag -}}
+  data-drag="true"
+  {{- end -}}
+></div>
+<script type="application/json" id="sakura-live2d-tools">{{ $tools | jsonify | safeJS }}</script>
+{{- end -}}

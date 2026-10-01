@@ -1,0 +1,65 @@
+{{ $page := .Page }}
+{{ $cover := partial "post-cover.html" $page }}
+{{ $pos := mod (.Index | default 0) 2 }}
+{{ $modifiedDate := partial "post-modified-date.html" $page }}
+{{ $dateDisplay := $modifiedDate.display }}
+{{ $dateTime := $modifiedDate.datetime }}
+{{ $dateOnly := $modifiedDate.dateOnly }}
+<article class="sakura-post-card {{ if eq $pos 0 }}left{{ else }}right{{ end }}{{ if $page.Params.pinned }} is-pinned{{ end }}">
+  {{- partial "post-pinned-badge.html" (dict "Page" $page) -}}
+  <a class="sakura-post-card__cover aspect-video" href="{{ $page.RelPermalink }}">
+    {{- partial "cover-list-media.html" (dict "cover" $cover "title" $page.Title "class" "sakura-lazy-img") -}}
+  </a>
+  <div class="sakura-post-card__content has-cover">
+    <div class="sakura-post-card-info">
+      <div class="sakura-post-date post-date">
+        <span class="sakura-post-date__inner" title="编辑于{{ $dateDisplay }}">
+          <iconify-icon icon="mdi:clock-outline" class="sakura-icon sakura-post-date__icon" aria-hidden="true"></iconify-icon>
+          <span class="sakura-post-date__label">编辑于</span>
+          <time datetime="{{ $dateTime }}"{{ if $dateOnly }} data-date-only="true"{{ end }} itemprop="dateModified">{{ $dateDisplay }}</time>
+        </span>
+      </div>
+      <h2 class="sakura-post-title sakura-post-card__title">
+        <a href="{{ $page.RelPermalink }}" aria-label="阅读全文：{{ $page.Title }}">{{ $page.Title }}</a>
+      </h2>
+      <div class="sakura-post-meta">
+        {{ with $page.Params.categories }}
+        <div class="sakura-post-categories">
+          {{ if reflect.IsSlice . }}
+            {{ range $i, $c := . }}
+            <a class="sakura-post-categories__link" href="{{ `/categories/` | relLangURL }}?category={{ $c | urlquery }}">
+              {{ if eq $i 0 }}
+              <iconify-icon icon="mdi:folder-open-outline" class="sakura-icon sakura-post-categories__icon" aria-hidden="true"></iconify-icon>
+              {{ else }}
+              <span class="sakura-post-categories__sep">/</span>
+              {{ end }}
+              <span>{{ $c }}</span>
+            </a>
+            {{ end }}
+          {{ else }}
+            <a class="sakura-post-categories__link" href="{{ `/categories/` | relLangURL }}?category={{ . | urlquery }}">
+              <iconify-icon icon="mdi:folder-open-outline" class="sakura-icon sakura-post-categories__icon" aria-hidden="true"></iconify-icon>
+              <span>{{ . }}</span>
+            </a>
+          {{ end }}
+        </div>
+        {{ end }}
+        {{ with $page.Params.tags }}
+        <div class="sakura-post-tags">
+          {{ range $i, $t := . }}
+          <a class="sakura-post-tags__link" href="{{ `/tags/` | relLangURL }}?tag={{ $t | urlquery }}">
+            {{ if eq $i 0 }}
+            <iconify-icon icon="mdi:tag-multiple" class="sakura-icon sakura-post-tags__icon" aria-hidden="true"></iconify-icon>
+            {{ else }}
+            <span class="sakura-post-tags__sep">·</span>
+            {{ end }}
+            <span>{{ $t }}</span>
+          </a>
+          {{ end }}
+        </div>
+        {{ end }}
+      </div>
+      <div class="sakura-post-excerpt sakura-post-card__excerpt">{{ partial "post-card-excerpt.html" $page }}</div>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,15 @@
+{
+  "name": "kukie-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12" },
+  "scripts": {
+    "site:build": "node scripts/site.mjs",
+    "site:package": "node scripts/site-package.mjs",
+    "console:build": "npm --prefix apps/console ci && npm --prefix apps/console run build",
+    "build": "node scripts/platform.mjs build",
+    "start": "node scripts/platform.mjs start",
+    "test": "node scripts/platform.mjs test"
+  }
+}

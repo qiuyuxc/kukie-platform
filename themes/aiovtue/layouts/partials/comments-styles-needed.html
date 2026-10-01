@@ -1,0 +1,11 @@
+{{- $needs := false -}}
+{{- if or (eq .Layout "comment") (eq .Layout "about") (eq .Layout "links") (eq .Layout "moments") -}}
+  {{- $needs = true -}}
+{{- else if eq .Section "moments" -}}
+  {{- $needs = true -}}
+{{- else if or (eq .Section "posts") (eq .Section "excalidraw") (eq .Layout "gallery-post") -}}
+  {{- if ne .Params.comment false -}}
+    {{- $needs = true -}}
+  {{- end -}}
+{{- end -}}
+{{- return $needs -}}

@@ -1,0 +1,8 @@
+{{ define "main" }}
+<main class="va-main-404">
+  <div class="not-found" title="404">404</div>
+  <div>
+    <button type="button" class="sakura-404-back" title="返回" onclick="if (window.history.length > 1) { window.history.back() } else { window.location.href = '{{ `/` | relLangURL }}' }">返回</button>
+  </div>
+</main>
+{{ end }}

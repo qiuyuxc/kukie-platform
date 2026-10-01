@@ -1,0 +1,14 @@
+{{ define "main" }}
+<article class="sakura-page sakura-archives-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+    <div id="archives-chart" class="sakura-stat-chart sakura-archives-chart"
+         data-start="{{ .Site.Params.charts.archivesStartMonth | default `2024-01` }}"
+         data-echarts-url="{{ `/vendor/echarts/echarts.min.js` | relURL }}"></div>
+    <script type="application/json" id="archives-posts-data">{{ $posts := slice }}{{ range where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") }}{{ $posts = $posts | append (dict "date" (.Date.Format "2006-01-02")) }}{{ end }}{{ $posts | jsonify | safeHTML }}</script>
+    {{ $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") }}
+    {{ $posts = partial "posts-sorted.html" (dict "Pages" $posts) }}
+    {{- partial "archives-timeline-list.html" (dict "Pages" $posts) -}}
+  </div>
+</article>
+{{ end }}

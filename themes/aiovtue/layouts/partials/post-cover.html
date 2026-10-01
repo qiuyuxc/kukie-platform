@@ -1,0 +1,14 @@
+{{- $page := . -}}
+{{- $cover := "" -}}
+{{- if ne $page.Params.cover false -}}
+  {{- $cover = strings.TrimSpace ($page.Params.cover | default "") -}}
+  {{- if not $cover -}}
+    {{- $cover = $page.Site.Params.defaultCover -}}
+  {{- end -}}
+  {{- if and $cover (not (or (hasPrefix $cover "http://") (hasPrefix $cover "https://") (hasPrefix $cover "//"))) -}}
+    {{- if not (hasPrefix $cover "/") -}}
+      {{- $cover = printf "/%s" $cover -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $cover -}}

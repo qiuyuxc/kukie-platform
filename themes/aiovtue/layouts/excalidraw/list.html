@@ -1,0 +1,19 @@
+{{ define "main" }}
+<article class="sakura-page sakura-excalidraw-list-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+  {{- $pages := sort .Pages "Date" "desc" -}}
+  {{- if not $pages -}}
+    <p class="sakura-excalidraw-list-empty">暂无画板文章，请在 <code>content/excalidraw/</code> 下创建页面 bundle。</p>
+  {{- else -}}
+    <div class="sakura-post-list">
+      <div class="post-list-container post-list-container--cards">
+        {{- range $index, $page := $pages -}}
+          {{- partial "post-card.html" (dict "Page" $page "Site" $.Site "Index" $index) -}}
+        {{- end -}}
+      </div>
+    </div>
+  {{- end -}}
+  </div>
+</article>
+{{ end }}

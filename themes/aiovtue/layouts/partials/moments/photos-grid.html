@@ -1,0 +1,26 @@
+{{- $photos := .photos -}}
+{{- $label := .label | default "照片" -}}
+{{- $photoClass := .photoClass -}}
+{{- $photosClass := .photosClass -}}
+{{- $photoCount := len $photos -}}
+{{- if gt $photoCount 9 -}}
+  {{- $photos = first 9 $photos -}}
+  {{- $photoCount = 9 -}}
+{{- end -}}
+<div class="{{ $photosClass }} {{ $photosClass }}--count-{{ $photoCount }}">
+  {{- range $photoIndex, $photo := $photos -}}
+    <button
+      type="button"
+      class="{{ $photoClass }}"
+      data-media-src="{{ $photo.url }}"
+      aria-label="查看 {{ $label }} {{ add $photoIndex 1 }}"
+    >
+      <img
+        src="{{ $photo.url }}"
+        alt="{{ $photo.caption | default $label }}"
+        loading="{{ if eq $photoIndex 0 }}eager{{ else }}lazy{{ end }}"
+        decoding="async"
+      >
+    </button>
+  {{- end -}}
+</div>

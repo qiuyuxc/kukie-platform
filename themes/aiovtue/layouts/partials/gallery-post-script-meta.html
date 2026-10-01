@@ -1,0 +1,4 @@
+{{- if and .IsPage (eq .Layout "gallery-post") -}}
+{{- $galleryPostJs := partial "gallery-post/init-js-resource.html" . -}}
+<meta name="sakura-gallery-post-script" content="{{ $galleryPostJs.RelPermalink }}">
+{{- end -}}

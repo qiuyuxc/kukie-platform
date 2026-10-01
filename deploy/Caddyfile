@@ -1,0 +1,13 @@
+{$KUKIE_SITE_HOST} {
+	encode zstd gzip
+	reverse_proxy kukie:8086
+}
+
+{$KUKIE_CONSOLE_HOST} {
+	encode zstd gzip
+	reverse_proxy kukie:8085
+}
+
+{$KUKIE_API_HOST} {
+	reverse_proxy kukie:8084
+}

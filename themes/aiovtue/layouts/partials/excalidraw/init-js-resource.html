@@ -1,0 +1,2 @@
+{{- $js := resources.Get "js/excalidraw-init.js" | js.Build | minify | fingerprint -}}
+{{- return $js -}}

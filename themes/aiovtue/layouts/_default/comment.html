@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{- $env := .Site.Params.envelope | default dict -}}
+<article class="sakura-page sakura-comment-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+    <div
+      class="envelope-maincontent"
+      style="--wrap-height: {{ default 447 $env.wrapHeight }}px; --open-height: {{ default 1050 $env.openHeight }}px; --open-offset: {{ default -200 $env.openOffset }}px; --danmaku-open-bottom-trim: {{ default 140 $env.danmakuOpenBottomTrim }}px;"
+    >
+      <div class="envelope-danmaku" aria-hidden="true">
+        <div class="envelope-danmaku__screen"></div>
+      </div>
+      <div
+        class="form-wrap envelope-desktop"
+        id="envelope-wrap"
+        style="--wrap-height: {{ default 447 $env.wrapHeight }}px; --open-height: {{ default 1050 $env.openHeight }}px; --open-offset: {{ default -200 $env.openOffset }}px;"
+      >
+        <img class="beforeimg" src="{{ default `/envelope/before.png` $env.before | relURL }}" alt="信封背景">
+        <div class="envelope">
+          {{- partial "envelope-letter.html" . -}}
+        </div>
+        <img class="afterimg" src="{{ default `/envelope/after.png` $env.after | relURL }}" alt="信封前景">
+      </div>
+      <div class="envelope-mobile">
+        {{- partial "envelope-letter.html" . -}}
+      </div>
+    </div>
+    <div class="envelope-comment-wrap">
+      {{- partial "comment-section.html" . -}}
+    </div>
+  </div>
+</article>
+{{ end }}

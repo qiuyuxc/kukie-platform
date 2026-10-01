@@ -1,0 +1,22 @@
+<header class="sakura-page-header{{ with .Params.cover }} has-cover{{ end }}" data-page="{{ .Section }}">
+  {{- partial "cover-media.html" (dict "cover" .Params.cover "title" .Title "coverClass" "sakura-page-header__cover" "loading" "eager") -}}
+  <div class="sakura-page-header__inner">
+    <h1 class="sakura-page-header__title">
+      <span class="sakura-header-title">
+        {{- $icon := .Params.icon -}}
+        {{- if not $icon -}}
+          {{- if eq .Section "categories" }}{{ $icon = "ri:folder-line" }}{{ end -}}
+          {{- if eq .Section "tags" }}{{ $icon = "ri:price-tag-3-line" }}{{ end -}}
+          {{- if eq .Section "archives" }}{{ $icon = "ri:archive-line" }}{{ end -}}
+        {{- else if hasPrefix $icon "i-ri-" -}}
+          {{- $icon = replace $icon "i-ri-" "ri:" -}}
+        {{- end -}}
+        {{- with $icon -}}
+        {{ printf `<iconify-icon icon="%s" class="sakura-page-header__icon" aria-hidden="true"></iconify-icon>` $icon | safeHTML }}
+        {{- end -}}
+        <span class="sakura-page-header__text">{{ .Title }}</span>
+      </span>
+    </h1>
+    {{ with .Description }}<p class="sakura-page-header__desc">{{ . }}</p>{{ end }}
+  </div>
+</header>

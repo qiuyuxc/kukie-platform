@@ -1,0 +1,14 @@
+{{- $content := .content -}}
+{{- $ph := .ph -}}
+{{- $phPrimary := .phPrimary -}}
+{{- range findRE `<pre[^>]*>[\s\S]*?</pre>` $content -}}
+  {{- $block := replace . "![签名]" $phPrimary -}}
+  {{- $block = replace $block "[签名]" $ph -}}
+  {{- $content = replace $content . $block -}}
+{{- end -}}
+{{- range findRE `<code[^>]*>[\s\S]*?</code>` $content -}}
+  {{- $block := replace . "![签名]" $phPrimary -}}
+  {{- $block = replace $block "[签名]" $ph -}}
+  {{- $content = replace $content . $block -}}
+{{- end -}}
+{{- return $content -}}

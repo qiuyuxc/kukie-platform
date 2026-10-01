@@ -1,0 +1,31 @@
+{{- $data := site.Data.links -}}
+{{- $groups := $data.linkGroups | default slice -}}
+{{- $g1 := index $groups 0 -}}
+{{- $g2 := index $groups 1 -}}
+{{- if or $g1 $g2 -}}
+{{- $g1items := slice -}}
+{{- $g2items := slice -}}
+{{- with $g1 -}}
+  {{- range .links -}}
+    {{- $g1items = $g1items | append (dict "url" .url "name" .name "blog" .blog) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $g2 -}}
+  {{- range .links -}}
+    {{- $g2items = $g2items | append (dict "url" .url "name" .name "blog" .blog) -}}
+  {{- end -}}
+{{- end -}}
+{{- $pickedG1 := first 8 $g1items -}}
+{{- $needG2 := sub 12 (len $pickedG1) -}}
+{{- $pickedG2 := first $needG2 (shuffle $g2items) -}}
+{{- $all := slice -}}
+{{- range $pickedG1 -}}
+  {{- $all = $all | append . -}}
+{{- end -}}
+{{- range $pickedG2 -}}
+  {{- $all = $all | append . -}}
+{{- end -}}
+{{- .Scratch.Set "footerLinksG1" $g1items -}}
+{{- .Scratch.Set "footerLinksG2" $g2items -}}
+{{- .Scratch.Set "footerLinksAll" $all -}}
+{{- end -}}

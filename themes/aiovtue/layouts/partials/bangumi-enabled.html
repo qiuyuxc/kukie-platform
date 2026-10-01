@@ -1,0 +1,5 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.bangumi "enable" -}}
+  {{- $enabled = site.Params.bangumi.enable -}}
+{{- end -}}
+{{- return $enabled -}}

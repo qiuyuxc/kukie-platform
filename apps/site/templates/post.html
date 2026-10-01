@@ -1,0 +1,21 @@
+{{define "post"}}
+<article class="sakura-page sakura-post sakura-post-page">
+<header class="sakura-page-header sakura-post-header has-cover" data-page="posts"><img class="sakura-page-header__cover" src="{{cover .Post.Cover}}" alt="{{.Post.Title}}" loading="eager" fetchpriority="high"><div class="sakura-page-header__inner sakura-header-container">
+<h1 class="sakura-page-header__title"><span class="sakura-header-title"><span class="sakura-page-header__text sakura-title">{{.Post.Title}}</span></span></h1>
+<div class="sakura-post-header-meta sakura-post-meta"><div class="sakura-post-header-meta__row sakura-post-header-meta__row--date"><span class="sakura-post-date posted-time post-time"><span class="sakura-post-date__inner"><iconify-icon icon="mdi:clock-outline" class="sakura-post-date__icon" aria-hidden="true"></iconify-icon><span class="sakura-post-date__label">发表于</span><time datetime="{{.Post.Date}}">{{.Post.Date}}</time></span></span></div>
+<div class="sakura-post-header-meta__row sakura-post-header-meta__row--taxonomy"><span class="sakura-post-header-meta__item">分类：<a href="/categories/?category={{queryEscape .Post.Category}}">{{.Post.Category}}</a></span><span class="sakura-post-header-meta__item">标签：{{range .Post.Tags}}<a href="/tags/?tag={{queryEscape .}}">{{.}}</a> {{end}}</span></div></div>
+<p class="sakura-post-header-reading">阅读时长：{{.Post.Minutes}} 分钟</p></div></header>
+<div class="sakura-triple-columns-base sakura-triple-columns{{if not .Headings}} sakura-triple-columns--no-toc{{end}}"><aside class="sakura-post-aside-left" aria-hidden="true"></aside><div class="sakura-post-main"><div class="sakura-page-content sakura-post-body">
+<div class="markdown-body prose sakura-post-content">{{.Body}}</div>
+{{.Site.Sponsor}}
+{{if .Site.License.Enable}}<div class="post-copyright-wrap"><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>{{if .Site.Signature}}<span class="post-copyright-author-signature">{{.Site.Signature}}</span>{{else}}<span class="post-copyright-author-name">{{.Site.Author}}</span>{{end}}</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="{{.Canonical}}" target="_blank" rel="noopener">{{.Canonical}}</a></li><li class="post-copyright-license"><strong>版权声明：</strong><span>本站所有文章除特别声明外，均采用 <a href="https://creativecommons.org/{{if eq .Site.License.Type "zero"}}publicdomain{{else}}licenses{{end}}/{{.Site.License.Type}}/{{if eq .Site.License.Type "zero"}}1.0{{else}}4.0{{end}}/deed.{{.Site.License.Language}}" target="_blank" rel="noopener">CC {{.Site.License.Type}}</a> 许可协议。</span></li></ul></div>{{end}}
+<p><a href="/">返回首页</a></p>
+{{template "comments" .}}
+</div></div>
+{{if .Headings}}<aside class="sakura-aside sakura-post-toc"><div class="sakura-toc"><div class="sakura-toc__inner"><div class="outline-title">文章目录</div><div class="outline-marker" aria-hidden="true"></div><div class="sakura-toc__nav"><nav id="TableOfContents" aria-label="文章目录"><ul>{{range .Headings}}<li><a href="#{{.ID}}" class="toc-link toc-link--{{.Level}}">{{.Title}}</a></li>{{end}}</ul></nav></div></div></div></aside>{{end}}
+</div></article>
+{{end}}
+
+{{define "notice"}}
+<article class="sakura-page"><header class="site-page-heading"><h1>{{.Notice.Title}}</h1><p>小站公告</p></header><div class="sakura-page-content"><div class="markdown-body prose site-notice-text">{{.Notice.Text}}</div><p><a href="/notices/">全部公告</a></p></div></article>
+{{end}}

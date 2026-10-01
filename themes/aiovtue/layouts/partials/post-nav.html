@@ -1,0 +1,32 @@
+{{- $prev := .PrevInSection -}}
+{{- $next := .NextInSection -}}
+{{- $merge := true -}}
+{{- with .Site.Params.postFooter -}}
+  {{- if ne .navigationMerge nil -}}
+    {{- $merge = .navigationMerge -}}
+  {{- end -}}
+{{- end -}}
+{{- if or $prev $next -}}
+<nav class="sakura-post-nav{{ if and $merge (and $prev $next) }} is-merge{{ end }}" aria-label="文章导航">
+  {{- with $prev -}}
+  {{- $cover := partial "post-cover.html" . -}}
+  <a class="sakura-image-card card-prev{{ if and $merge $next }} has-sibling{{ end }}" href="{{ .RelPermalink }}">
+    {{- partial "cover-list-media.html" (dict "cover" $cover "title" .Title "class" "sakura-image-card-img") -}}
+    <div class="sakura-post-nav-content">
+      <span class="sakura-post-nav-label">Previous Post</span>
+      <span class="sakura-post-nav-title">{{ .Title }}</span>
+    </div>
+  </a>
+  {{- end -}}
+  {{- with $next -}}
+  {{- $cover := partial "post-cover.html" . -}}
+  <a class="sakura-image-card card-next{{ if and $merge $prev }} has-sibling{{ end }}" href="{{ .RelPermalink }}">
+    {{- partial "cover-list-media.html" (dict "cover" $cover "title" .Title "class" "sakura-image-card-img") -}}
+    <div class="sakura-post-nav-content">
+      <span class="sakura-post-nav-label">Next Post</span>
+      <span class="sakura-post-nav-title">{{ .Title }}</span>
+    </div>
+  </a>
+  {{- end -}}
+</nav>
+{{- end -}}

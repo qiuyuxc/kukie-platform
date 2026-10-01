@@ -1,0 +1,15 @@
+{{ $layout := default "preview" site.Params.links.layout }}
+{{ $data := site.Data.links }}
+{{- $shuffleDefault := true -}}
+{{- if and $data (isset $data "shuffleGroups") -}}
+  {{- $shuffleDefault = $data.shuffleGroups -}}
+{{- end -}}
+<div class="links-preview" data-shuffle-groups="{{ if $shuffleDefault }}true{{ else }}false{{ end }}">
+  {{ range $data.linkGroups }}
+  {{- partial "links-preview-group.html" (dict
+    "Group" .
+    "PageLayout" $layout
+    "ShuffleDefault" $shuffleDefault
+  ) -}}
+  {{ end }}
+</div>

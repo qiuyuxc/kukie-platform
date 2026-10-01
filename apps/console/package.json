@@ -1,0 +1,9 @@
+{
+  "name": "kukie-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "vite build", "dev": "vite --host 127.0.0.1 --port 8086" },
+  "dependencies": { "vue": "3.5.43", "dompurify": "3.4.16", "marked": "18.0.14", "qrcode": "1.5.4" },
+  "devDependencies": { "vite": "7.3.6", "@vitejs/plugin-vue": "6.0.9" }
+}

@@ -1,0 +1,63 @@
+{{- $page := .page -}}
+{{- $index := .index -}}
+{{- $layout := .layout -}}
+{{- $parsed := partial "moments/parse-content.html" $page -}}
+{{- $entryKey := partial "moments/comment-path.html" $page -}}
+{{- if eq $layout "cards" -}}
+<article
+  class="moments-card"
+  id="moments-entry-{{ $index }}"
+  data-entry-key="{{ $entryKey }}"
+>
+  {{- partial "moments/date.html" (dict "page" $page "class" "moments-card__meta") -}}
+  {{- with $parsed.text -}}
+    <div class="moments-card__text moment-prose">{{ . | markdownify }}</div>
+  {{- end -}}
+  {{- with $parsed.photos -}}
+    {{- partial "moments/photos-grid.html" (dict
+      "photos" .
+      "label" "照片"
+      "photosClass" "moments-card__photos"
+      "photoClass" "moments-card__photo"
+    ) -}}
+  {{- end -}}
+  <div class="moments-card__footer">
+    {{- partial "moments/comment-toggle.html" $page -}}
+  </div>
+  {{- partial "moments/comment-panel.html" $page -}}
+</article>
+{{- else -}}
+<article
+  class="travel-moment"
+  id="moments-entry-{{ $index }}"
+  data-entry-key="{{ $entryKey }}"
+>
+  {{- partial "author-avatar.html" (dict
+    "src" .avatar
+    "class" "travel-moment__avatar"
+    "alt" ""
+    "width" 42
+    "height" 42
+    "play" false
+  ) -}}
+  <div class="travel-moment__main">
+    <p class="travel-moment__name">{{ .authorName }}</p>
+    {{- with $parsed.text -}}
+      <div class="travel-moment__text moment-prose">{{ . | markdownify }}</div>
+    {{- end -}}
+    {{- with $parsed.photos -}}
+      {{- partial "moments/photos-grid.html" (dict
+        "photos" .
+        "label" "照片"
+        "photosClass" "travel-moment__photos"
+        "photoClass" "travel-moment__photo"
+      ) -}}
+    {{- end -}}
+    <div class="travel-moment__footer">
+      {{- partial "moments/date.html" (dict "page" $page "class" "travel-moment__meta") -}}
+      {{- partial "moments/comment-toggle.html" $page -}}
+    </div>
+    {{- partial "moments/comment-panel.html" $page -}}
+  </div>
+</article>
+{{- end -}}

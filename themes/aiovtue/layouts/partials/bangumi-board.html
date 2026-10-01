@@ -1,0 +1,41 @@
+{{- if not (partial "bangumi-enabled.html" .) -}}
+<div class="bangumi-board bangumi-board--disabled">
+  <p class="bangumi-board__notice">追番页未启用，请在 hugo.toml 中设置 <code>params.bangumi.enable = true</code>。</p>
+</div>
+{{- else -}}
+{{- $data := site.Data.bangumi | default dict -}}
+{{- $want := $data.wantWatch | default slice -}}
+{{- $watching := $data.watching | default slice -}}
+{{- $watched := $data.watched | default slice -}}
+<div class="bangumi-board" data-bangumi-tabs>
+  <div class="bangumi-tabs">
+    <input class="bangumi-tabs__input" type="radio" name="bangumi-tab" id="bangumi-tab-want" checked>
+    <input class="bangumi-tabs__input" type="radio" name="bangumi-tab" id="bangumi-tab-watching">
+    <input class="bangumi-tabs__input" type="radio" name="bangumi-tab" id="bangumi-tab-watched">
+
+    <div class="bangumi-tabs__labels" role="tablist" aria-label="追番分类">
+      <label class="bangumi-tabs__label" for="bangumi-tab-want" role="tab">
+        想看<span class="bangumi-tabs__count">{{ len $want }}</span>
+      </label>
+      <label class="bangumi-tabs__label" for="bangumi-tab-watching" role="tab">
+        在看<span class="bangumi-tabs__count">{{ len $watching }}</span>
+      </label>
+      <label class="bangumi-tabs__label" for="bangumi-tab-watched" role="tab">
+        已看<span class="bangumi-tabs__count">{{ len $watched }}</span>
+      </label>
+    </div>
+
+    <div class="bangumi-tabs__panels">
+      <section class="bangumi-panel" id="bangumi-panel-want" role="tabpanel" aria-labelledby="bangumi-tab-want">
+        {{- partial "bangumi-card-grid.html" (dict "items" $want "empty" "暂无想看的番剧") -}}
+      </section>
+      <section class="bangumi-panel" id="bangumi-panel-watching" role="tabpanel" aria-labelledby="bangumi-tab-watching" style="display:none">
+        {{- partial "bangumi-card-grid.html" (dict "items" $watching "empty" "暂无在追的番剧") -}}
+      </section>
+      <section class="bangumi-panel" id="bangumi-panel-watched" role="tabpanel" aria-labelledby="bangumi-tab-watched" style="display:none">
+        {{- partial "bangumi-card-grid.html" (dict "items" $watched "empty" "暂无已看完的番剧") -}}
+      </section>
+    </div>
+  </div>
+</div>
+{{- end -}}

@@ -1,0 +1,17 @@
+{{ define "head-extra" }}
+<script>
+  (function () {
+    var cat = {{ .Data.Term | jsonify }};
+    var base = {{ `/categories/` | relLangURL | jsonify }};
+    window.location.replace(base + '?category=' + encodeURIComponent(cat));
+  })();
+</script>
+{{ end }}
+{{ define "main" }}
+<article class="sakura-page sakura-taxonomy-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+    <p class="sakura-taxonomy-count">正在跳转到分类筛选…</p>
+  </div>
+</article>
+{{ end }}

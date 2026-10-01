@@ -1,0 +1,27 @@
+{{- $sponsor := .Site.Params.sponsor -}}
+{{- $show := false -}}
+{{- if $sponsor.enable -}}
+  {{- if ne .Params.sponsor false -}}
+    {{- $show = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $show -}}
+<div class="sakura-sponsor">
+  <button type="button" class="sakura-sponsor__toggle" title="{{ $sponsor.title | default "打赏" }}" aria-expanded="false" aria-controls="sponsor-panel-{{ .File.UniqueID }}">
+    <iconify-icon icon="ri:heart-line" class="sakura-sponsor__heart" aria-hidden="true"></iconify-icon>
+  </button>
+  <div class="sakura-sponsor__panel" id="sponsor-panel-{{ .File.UniqueID }}">
+    {{- with $sponsor.description -}}
+    <p class="sakura-sponsor__description">{{ . }}</p>
+    {{- end -}}
+    <div class="sakura-sponsor__methods">
+      {{- range $sponsor.methods -}}
+      <a class="sakura-sponsor__method" href="{{ .url }}" target="_blank" rel="noopener noreferrer" style="--method-color: {{ .color | default "var(--va-c-primary)" }}">
+        <img class="sakura-sponsor__method-img" src="{{ .url }}" alt="{{ .name }}" title="{{ .name }}" loading="lazy" decoding="async">
+        <span class="sakura-sponsor__method-name">{{ .name }}</span>
+      </a>
+      {{- end -}}
+    </div>
+  </div>
+</div>
+{{- end -}}

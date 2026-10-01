@@ -1,0 +1,47 @@
+{{- $license := .Site.Params.license -}}
+{{- $show := false -}}
+{{- if $license.enable -}}
+  {{- $show = true -}}
+{{- end -}}
+{{- if .Params.copyright -}}
+  {{- $show = true -}}
+{{- end -}}
+{{- if $show -}}
+{{- $type := $license.type | default "by-nc-sa" -}}
+{{- $lang := $license.language | default "zh" -}}
+{{- $version := "4.0" -}}
+{{- if eq $type "zero" -}}
+  {{- $version = "1.0" -}}
+{{- end -}}
+{{- $ccPath := "licenses" -}}
+{{- if eq $type "zero" -}}
+  {{- $ccPath = "publicdomain" -}}
+{{- end -}}
+{{- $ccUrl := printf "https://creativecommons.org/%s/%s/%s/deed.%s" $ccPath $type $version $lang -}}
+{{- $ccLabel := printf "CC %s" ($type | upper) -}}
+{{- $link := .Permalink | absURL -}}
+{{- $parsed := urls.Parse (.Site.BaseURL | absURL) -}}
+{{- $displayLink := printf "%s://%s%s" $parsed.Scheme $parsed.Host .RelPermalink -}}
+<div class="post-copyright-wrap">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      {{- if default true .Site.Params.signature.postCopyrightEnable -}}
+      <span class="post-copyright-author-signature">
+        {{- partial "signature-inline.html" (dict) -}}
+      </span>
+      {{- else -}}
+      <span class="post-copyright-author-name"> {{ .Site.Params.author.name }}</span>
+      {{- end -}}
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="{{ $link }}" target="_blank" rel="noopener" title="本文链接">{{ $displayLink }}</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明：</strong>
+      <span>本站所有文章除特别声明外，均采用 <a href="{{ $ccUrl }}" target="_blank" rel="noopener" title="{{ $ccLabel }} {{ $version }}">{{ $ccLabel }}</a> 许可协议。</span>
+    </li>
+  </ul>
+</div>
+{{- end -}}

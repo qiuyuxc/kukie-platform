@@ -1,0 +1,29 @@
+{{- $page := . -}}
+{{- if eq $page.Params.comment false -}}
+  {{- return -}}
+{{- end -}}
+{{- $commentId := $page.File.UniqueID -}}
+{{- $provider := default "twikoo" site.Params.comment.provider -}}
+{{- $commentPath := partial "moments/comment-path.html" $page -}}
+<div
+  class="moment-comment-panel"
+  id="moment-comment-{{ $commentId }}"
+  data-comment-id="{{ $commentId }}"
+  data-comment-path="{{ $commentPath }}"
+  data-comment-provider="{{ $provider }}"
+  hidden
+>
+  <div class="moment-comment-panel__inner moment-comment-host sakura-comment sakura-comment--moment" data-comment-provider="{{ $provider }}">
+    {{- if eq $provider "waline" -}}
+    <div
+      id="waline-moment-{{ $commentId }}"
+      class="sakura-waline moment-comment-root"
+      data-placeholder="{{ site.Params.waline.placeholder | default `分享你的想法...` }}"
+    ></div>
+    {{- else -}}
+    <div class="sakura-twikoo">
+      <div id="tcomment-moment-{{ $commentId }}" class="moment-comment-root"></div>
+    </div>
+    {{- end -}}
+  </div>
+</div>

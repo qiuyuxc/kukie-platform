@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN" translate="no" class="notranslate{{if .Home}} is-home has-home-layout{{end}}" {{.Site.NavbarAttrs}}>
+<head>
+{{.Head}}
+<title>{{.Title}}{{if not .Home}} | {{.Site.Title}}{{end}}</title>
+<meta name="description" content="{{.Description}}">
+<link rel="canonical" href="{{.Canonical}}">
+<link rel="sitemap" type="application/xml" href="{{.Site.BaseURL}}/sitemap.xml">
+<link rel="alternate" type="application/rss+xml" title="{{.Site.Title}}" href="{{.Site.BaseURL}}/index.xml">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:site_name" content="{{.Site.Title}}">
+<meta property="og:title" content="{{.Title}}">
+<meta property="og:description" content="{{.Description}}">
+<meta property="og:url" content="{{.Canonical}}">
+<meta property="og:image" content="{{.Image}}">
+<meta property="og:type" content="{{if .Post}}article{{else}}website{{end}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{.Title}}">
+<meta name="twitter:description" content="{{.Description}}">
+<meta name="twitter:image" content="{{.Image}}">
+{{if .Post}}<meta property="article:published_time" content="{{.Post.Date}}"><meta property="article:modified_time" content="{{.Post.UpdatedAt}}">{{end}}
+{{if .NoIndex}}<meta name="robots" content="noindex, follow">{{end}}
+{{if .Schema}}<script type="application/ld+json">{{json .Schema}}</script>{{end}}
+<link rel="stylesheet" href="/site-assets/site.css">
+<noscript><style>.sakura-post-card,.sakura-lazy-img{opacity:1!important;visibility:visible!important;transform:none!important}</style></noscript>
+</head>
+<body class="notranslate" translate="no">
+{{.Site.Navbar}}
+<div id="content" class="site-content">
+{{if eq .Kind "post"}}{{template "post" .}}{{else if eq .Kind "notice"}}{{template "notice" .}}{{else}}{{template "listing" .}}{{end}}
+</div>
+{{.Site.Footer}}
+{{.Site.Tail}}
+</body>
+</html>

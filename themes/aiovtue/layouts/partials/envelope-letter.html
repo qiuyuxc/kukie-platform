@@ -1,0 +1,17 @@
+{{- $env := .Site.Params.envelope | default dict -}}
+<div class="formmain">
+  <img class="headerimg" src="{{ default `/envelope/cover.png` $env.cover | relURL }}" alt="信笺封面">
+  <div class="comments-main">
+    <h3 class="title3">✨来自{{ .Site.Params.author.name }}的留言:</h3>
+    <div class="comments">
+      <p>本站有哪些做得好或者不好的地方？</p>
+      <p>或者你有什么改进的建议？</p>
+      <p>又或者你有什么具体的问题需要咨询？</p>
+      <p>都可以在下方评论区留言哦~~~</p>
+    </div>
+    <div class="bottomcontent">
+      <img class="bottomimg" src="{{ default `/envelope/line.png` $env.line | relURL }}" alt="">
+    </div>
+    <p class="bottomhr">小站站长亲自为您服务！</p>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+{{define "comments"}}
+<section id="page-comment-section" class="sakura-comment sakura-page-comment kukie-comments" data-comment-provider="kukie" data-post-id="{{.Post.ID}}" aria-labelledby="kukie-comments-title">
+<h2 id="kukie-comments-title">评论 <small data-comment-count>{{len .Comments}}</small></h2>
+<p class="kukie-comments-note">登录后，分享你的想法吧。</p>
+<noscript><p>以下为最新评论。登录和发表评论需要启用 JavaScript。</p></noscript>
+<div data-comment-controls hidden>
+<div data-comment-account hidden><span data-comment-identity></span> <button type="button" data-comment-logout>退出登录</button></div>
+<details data-comment-auth><summary>登录或注册后发表评论</summary>
+<form data-comment-login>
+<h3>登录</h3>
+<label>邮箱<input name="email" type="email" autocomplete="username" required maxlength="254"></label>
+<label>密码<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+<label>两步验证码或恢复码（如已开启）<input name="otp" autocomplete="one-time-code" maxlength="32"></label>
+<button type="submit">登录</button>
+</form>
+<details data-comment-registration hidden><summary>没有账号？邮箱注册</summary>
+<form data-comment-register>
+<label>昵称<input name="name" autocomplete="nickname" required minlength="2" maxlength="24"></label>
+<label>邮箱<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+<button type="button" data-comment-code>发送邮箱验证码</button>
+<label>邮箱验证码<input name="code" inputmode="numeric" autocomplete="one-time-code" required pattern="[0-9]{6}" maxlength="6"></label>
+<label>密码（至少 12 位）<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="128"></label>
+<button type="submit">注册并登录</button>
+</form></details>
+<p data-comment-registration-note>注册状态加载中。</p>
+</details>
+<form data-comment-compose hidden><label for="kukie-comment-text">你的评论</label><textarea id="kukie-comment-text" name="text" rows="4" maxlength="1000" required placeholder="分享你的想法，最多 1000 字"></textarea><button type="submit">发表评论</button></form>
+<p data-comment-status role="status" aria-live="polite"></p>
+</div>
+<ol class="kukie-comment-list" data-comment-list>
+{{range .Comments}}<li><div class="kukie-comment-meta"><strong>{{.Name}}</strong>{{if .AuthorLabel}}<span>{{.AuthorLabel}}</span>{{end}}<time datetime="{{.CreatedAt}}">{{.CreatedAt}}</time></div><p>{{.Text}}</p></li>{{else}}<li class="kukie-comments-note">还没有评论，欢迎留下第一条。</li>{{end}}
+</ol>
+<p class="kukie-comments-note">显示最近 100 条评论。</p>
+</section>
+{{end}}

@@ -1,0 +1,60 @@
+{{- if partial "music-enabled.html" . -}}
+{{- $music := .Site.Params.music -}}
+{{- $theme := .Site.Params.primaryColor | default "#DF9193" -}}
+{{- $apis := $music.apis | default slice -}}
+{{- if not $apis -}}
+  {{- with $music.api -}}
+    {{- $apis = slice . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $apis -}}
+  {{- $apis = slice "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r" -}}
+{{- end -}}
+{{- $position := default "left" $music.position -}}
+{{- if not (in (slice "left" "right") $position) -}}
+  {{- $position = "left" -}}
+{{- end -}}
+{{- $draggable := default false $music.draggable -}}
+{{- $edgeDock := true -}}
+{{- if isset $music "edgeDock" -}}{{- $edgeDock = $music.edgeDock -}}{{- end -}}
+<div
+  class="sakura-music sakura-music--{{ $position }}"
+  id="sakura-music"
+  data-storage-key="sakura-music-state"
+  data-position="{{ $position }}"
+  data-edge-dock="{{ if $edgeDock }}true{{ else }}false{{ end }}"
+  {{- if $draggable -}}
+  data-draggable="true"
+  {{- end -}}
+  data-server="{{ $music.server | default `netease` }}"
+  data-type="{{ $music.type | default `playlist` }}"
+  data-id="{{ $music.id }}"
+  data-theme="{{ $theme }}"
+>
+  <div class="sakura-music__panel" id="sakura-music-panel" aria-hidden="true">
+    <div class="sakura-music__panel-head">
+      <span class="sakura-music__panel-title">正在播放</span>
+      <button type="button" class="sakura-music__panel-close" id="sakura-music-close" aria-label="收起播放器">
+        <iconify-icon icon="ri:arrow-down-s-line" aria-hidden="true"></iconify-icon>
+      </button>
+    </div>
+    <div class="sakura-music__meting-host" id="sakura-music-meting-host">
+      <p class="sakura-music__loading" id="sakura-music-loading" hidden>播放器加载中…</p>
+      <p class="sakura-music__error" id="sakura-music-error" hidden>音乐播放器加载失败，请稍后重试</p>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="sakura-music__toggle"
+    id="sakura-music-toggle"
+    aria-label="打开音乐播放器"
+    aria-expanded="false"
+    aria-controls="sakura-music-panel"
+  >
+    <span class="sakura-music__toggle-disc" aria-hidden="true">
+      <iconify-icon icon="ri:disc-line" width="28" height="28"></iconify-icon>
+    </span>
+  </button>
+  <script type="application/json" id="sakura-music-apis">{{ $apis | jsonify | safeJS }}</script>
+</div>
+{{- end -}}

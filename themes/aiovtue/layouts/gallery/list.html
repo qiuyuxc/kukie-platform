@@ -1,0 +1,30 @@
+{{ define "main" }}
+<article class="sakura-page sakura-gallery-page">
+  {{ partial "gallery-header.html" . }}
+  <div class="sakura-gallery-main">
+    <div class="content sakura-page-content">
+      <div class="album-grid">
+        {{ $pages := slice }}
+        {{ with .Params.albums }}
+          {{ range . }}
+            {{ with $.GetPage (printf "gallery/%s" .) }}
+              {{ $pages = $pages | append . }}
+            {{ end }}
+          {{ end }}
+        {{ else }}
+          {{ $pages = .Pages.ByDate.Reverse }}
+        {{ end }}
+        {{ if not $pages }}
+        <p class="album-grid__empty">暂无相册，请在 <code>content/gallery/</code> 下创建相册并在 <code>content/gallery/_index.md</code> 中登记 slug。</p>
+        {{ else }}
+        <ul class="album-grid__list">
+          {{ range $pages }}
+            {{ partial "gallery-album-card.html" . }}
+          {{ end }}
+        </ul>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</article>
+{{ end }}

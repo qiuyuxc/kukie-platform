@@ -1,0 +1,89 @@
+{{ define "main" }}
+<article class="sakura-page sakura-gallery-page sakura-gallery-album-page{{ if .Params.encrypted }} is-locked{{ end }}"{{ if .Params.encrypted }} data-album-password="{{ .Params.password }}"{{ end }}>
+  {{ partial "gallery-header.html" . }}
+  <div class="sakura-gallery-main">
+    <div class="content sakura-page-content">
+      <div class="gallery-album-back"><a href="{{ `/gallery/` | relLangURL }}">← 返回相册列表</a></div>
+
+      {{ if .Params.encrypted }}
+      <div class="album-password-gate" id="album-password-gate">
+        <div class="album-password-gate__panel">
+          <div class="album-password-gate__icon" aria-hidden="true">🔒</div>
+          <h2 class="album-password-gate__title">{{ .Title }}</h2>
+          <p class="album-password-gate__hint">此相册已加密，请输入密码后查看</p>
+          <form class="album-password-gate__form" id="album-password-form">
+            <input class="album-password-gate__input" type="password" id="album-password-input" placeholder="请输入相册密码" autocomplete="current-password">
+            <button class="album-password-gate__submit" type="submit">进入相册</button>
+          </form>
+          <p class="album-password-gate__error" id="album-password-error" role="alert" hidden>密码错误，请重试</p>
+        </div>
+      </div>
+      {{ end }}
+
+      <div class="album-viewer{{ if .Params.encrypted }} is-hidden{{ end }}" id="album-viewer">
+        {{ $photos := sort (.Params.photos | default slice) "date" "desc" }}
+        {{ if not $photos }}
+        <div class="album-viewer__status">此相册暂无照片或视频。</div>
+        {{ else }}
+          {{ $groupKeys := slice }}
+          {{ range $photos }}
+            {{ $key := "unknown" }}
+            {{ with .date }}
+              {{ $key = replaceRE "^([0-9]{4})-([0-9]{1,2}).*" "$1-$2" . }}
+            {{ end }}
+            {{ if not (in $groupKeys $key) }}
+              {{ $groupKeys = $groupKeys | append $key }}
+            {{ end }}
+          {{ end }}
+          {{ range $groupKeys }}
+            {{ $monthKey := . }}
+            <section class="album-viewer__group">
+              <h3 class="album-viewer__month">
+                {{ if eq $monthKey "unknown" }}
+                  未标注日期
+                {{ else }}
+                  {{ $parts := split $monthKey "-" }}
+                  {{ printf "%s 年 %d 月" (index $parts 0) (int (index $parts 1)) }}
+                {{ end }}
+              </h3>
+              <div class="album-viewer__grid">
+                {{ range $photos }}
+                  {{ $key := "unknown" }}
+                  {{ with .date }}
+                    {{ $key = replaceRE "^([0-9]{4})-([0-9]{1,2}).*" "$1-$2" . }}
+                  {{ end }}
+                  {{ if eq $key $monthKey }}
+                    {{ $photo := . }}
+                    {{ $urlLower := lower $photo.url }}
+                    {{ $isVideo := or (hasSuffix $urlLower ".mp4") (hasSuffix $urlLower ".webm") (hasSuffix $urlLower ".mov") }}
+                    <button
+                      type="button"
+                      class="album-viewer__photo{{ if $isVideo }} is-video{{ end }}"
+                      data-media-src="{{ $photo.url }}"
+                      data-media-type="{{ if $isVideo }}video{{ else }}image{{ end }}"
+                      aria-label="{{ if $isVideo }}相册视频{{ else }}相册照片{{ end }}"
+                    >
+                      {{ if $isVideo }}
+                      {{ with $photo.poster }}
+                      <img class="album-viewer__thumb" src="{{ . }}" alt="" loading="eager" decoding="async">
+                      {{ else }}
+                      <video class="album-viewer__thumb-video" src="{{ $photo.url }}" preload="metadata" muted playsinline disablepictureinpicture aria-hidden="true"></video>
+                      {{ end }}
+                      <span class="album-viewer__play" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      </span>
+                      {{ else }}
+                      <img src="{{ $photo.url }}" alt="" loading="lazy" decoding="async">
+                      {{ end }}
+                    </button>
+                  {{ end }}
+                {{ end }}
+              </div>
+            </section>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</article>
+{{ end }}

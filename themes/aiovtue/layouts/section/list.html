@@ -1,0 +1,13 @@
+{{ define "main" }}
+<article class="sakura-page">
+  {{- partial "page-header.html" . -}}
+  <div class="sakura-page-content">
+    <div class="post-list-container">
+      {{ $pages := partial "posts-sorted.html" (dict "Pages" .Pages) }}
+      {{ range $index, $page := $pages }}
+        {{- partial "post-card.html" (dict "Page" $page "Site" $.Site "Index" $index) -}}
+      {{ end }}
+    </div>
+  </div>
+</article>
+{{ end }}

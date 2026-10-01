@@ -1,0 +1,4 @@
+{{- if or (eq .Section "moments") (eq .Layout "moments") -}}
+  {{- $momentsJs := resources.Get "js/moments-init.js" | js.Build | minify | fingerprint -}}
+<script src="{{ $momentsJs.RelPermalink }}" integrity="{{ $momentsJs.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{- end -}}

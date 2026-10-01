@@ -1,0 +1,131 @@
+{{- $page := . -}}
+{{- $parsed := partial "gallery-post/parse-content.html" $page -}}
+{{- $slides := $parsed.slides -}}
+{{- if not $slides -}}
+<div class="sakura-gallery-post-empty" role="alert">
+  未在正文中找到图片。请使用 Markdown 图片语法 <code>![](url)</code> 编写画廊内容。
+</div>
+{{- else -}}
+{{- $entries := slice -}}
+{{- range $slides -}}
+  {{- $media := partial "gallery-post/resolve-media.html" (dict "page" $page "url" .url) -}}
+  {{- $entries = $entries | append (dict "slide" . "media" $media) -}}
+{{- end -}}
+<div class="sakura-gallery-post-viewer" data-slide-count="{{ len $slides }}">
+  <div class="sakura-gallery-post-center">
+    {{- with $parsed.intro -}}
+    <div class="sakura-gallery-post-intro markdown-body prose">
+      {{ $page.RenderString . }}
+    </div>
+    {{- end -}}
+    <div class="sakura-gallery-post-main">
+      <div class="sakura-gallery-post-stage">
+        <div class="sakura-gallery-post-track" role="region" aria-label="画廊轮播" aria-live="polite">
+          {{- range $i, $entry := $entries -}}
+          {{- $slide := $entry.slide -}}
+          {{- $media := $entry.media -}}
+          <figure class="sakura-gallery-post-slide{{ if eq $i 0 }} is-active{{ end }}" data-index="{{ $i }}"{{ if ne $i 0 }} hidden{{ end }}>
+            <div class="sakura-gallery-post-frame">
+              <div class="sakura-gallery-post-frame__viewport">
+                <button
+                  type="button"
+                  class="sakura-gallery-post-media"
+                  data-media-src="{{ $media.src }}"
+                  data-media-type="{{ if $media.isVideo }}video{{ else }}image{{ end }}"
+                  aria-label="{{ if $slide.alt }}{{ $slide.alt }}{{ else }}查看大图{{ end }}"
+                  title="点击查看大图"
+                >
+                  {{- if $media.isVideo -}}
+                  <video
+                    class="sakura-gallery-post-media__el"
+                    src="{{ $media.src }}"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    {{- with $slide.alt }} title="{{ . }}"{{ end }}
+                  ></video>
+                  <span class="sakura-gallery-post-media__play" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                  </span>
+                  {{- else -}}
+                  <img
+                    class="sakura-gallery-post-media__el"
+                    src="{{ $media.src }}"
+                    alt="{{ $slide.alt }}"
+                    loading="eager"
+                    decoding="async"
+                  >
+                  {{- end -}}
+                </button>
+              </div>
+              {{- with $slide.caption -}}
+              <div class="sakura-gallery-post-danmaku">
+                <div class="sakura-gallery-post-danmaku__screen" aria-hidden="true"></div>
+                <div class="sakura-gallery-post-danmaku__fallback markdown-body prose">
+                  {{ $page.RenderString . }}
+                </div>
+                <div class="sakura-gallery-post-danmaku__source" hidden>
+                  {{ $page.RenderString . }}
+                </div>
+              </div>
+              {{- end -}}
+            </div>
+          </figure>
+          {{- end -}}
+        </div>
+      </div>
+      <div class="sakura-gallery-post-controls">
+        <button type="button" class="sakura-gallery-post-nav sakura-gallery-post-nav--prev" aria-label="上一张" title="上一张">
+          <iconify-icon icon="ant-design:left-outlined" aria-hidden="true"></iconify-icon>
+        </button>
+        <div class="sakura-gallery-post-counter" aria-live="polite">
+          <span class="sakura-gallery-post-counter__current">1</span>
+          <span class="sakura-gallery-post-counter__sep">/</span>
+          <span class="sakura-gallery-post-counter__total">{{ len $slides }}</span>
+        </div>
+        <button type="button" class="sakura-gallery-post-nav sakura-gallery-post-nav--next" aria-label="下一张" title="下一张">
+          <iconify-icon icon="ant-design:right-outlined" aria-hidden="true"></iconify-icon>
+        </button>
+      </div>
+      <div class="sakura-gallery-post-thumbs" role="tablist" aria-label="画廊缩略图"{{ if le (len $slides) 1 }} hidden{{ end }}>
+        <div class="sakura-gallery-post-thumbs__indicator" aria-hidden="true"></div>
+        <div class="sakura-gallery-post-thumbs__track">
+          {{- range $i, $entry := $entries -}}
+          {{- $slide := $entry.slide -}}
+          {{- $media := $entry.media -}}
+          <button
+            type="button"
+            class="sakura-gallery-post-thumb{{ if eq $i 0 }} is-active{{ end }}"
+            data-index="{{ $i }}"
+            role="tab"
+            aria-label="{{ if $slide.alt }}{{ $slide.alt }}{{ else }}第 {{ add $i 1 }} 张{{ end }}"
+            {{- if eq $i 0 }} aria-selected="true"{{ else }} aria-selected="false"{{ end }}
+          >
+            {{- if $media.isVideo -}}
+            <video
+              class="sakura-gallery-post-thumb__media"
+              src="{{ $media.src }}"
+              muted
+              playsinline
+              preload="metadata"
+            ></video>
+            <span class="sakura-gallery-post-thumb__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </span>
+            {{- else -}}
+            <img
+              class="sakura-gallery-post-thumb__media"
+              src="{{ $media.src }}"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            >
+            {{- end -}}
+          </button>
+          {{- end -}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{- end -}}

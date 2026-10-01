@@ -1,0 +1,8 @@
+{{- $enabled := false -}}
+{{- if isset site.Params.live2d "enable" -}}
+  {{- $enabled = site.Params.live2d.enable -}}
+{{- end -}}
+{{- if isset .Params "live2d" -}}
+  {{- $enabled = .Params.live2d -}}
+{{- end -}}
+{{- return $enabled -}}

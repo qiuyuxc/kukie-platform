@@ -1,0 +1,48 @@
+{{- $min := .Params.tocStartLevel | default 3 -}}
+{{- $max := .Params.tocEndLevel | default 4 -}}
+{{- $headings := slice -}}
+{{- range findRESubmatch `<h([2-4]) id="([^"]+)"[^>]*>([\s\S]*?)</h[2-4]>` .Content -}}
+  {{- $level := int (index . 1) -}}
+  {{- if and (ge $level $min) (le $level $max) -}}
+    {{- $headings = $headings | append (dict
+      "Level" $level
+      "ID" (index . 2)
+      "Title" ((index . 3) | plainify | strings.TrimSpace)
+    ) -}}
+  {{- end -}}
+{{- end -}}
+{{- if $headings -}}
+<div class="sakura-toc">
+  <div class="sakura-toc__inner">
+    <div class="outline-title">文章目录</div>
+    <div class="outline-marker" aria-hidden="true"></div>
+    <div class="sakura-toc__nav">
+      <span id="doc-outline-aria-label" class="visually-hidden">Table of Contents for current page</span>
+      <nav id="TableOfContents">
+        <ul>
+          {{- $prev := 0 -}}
+          {{- range $headings -}}
+            {{- $level := .Level -}}
+            {{- if gt $prev 0 -}}
+              {{- if gt $level $prev -}}
+                {{- range seq (sub $level $prev) -}}<ul>{{- end -}}
+              {{- else -}}
+                </li>
+                {{- if lt $level $prev -}}
+                  {{- range seq (sub $prev $level) -}}</ul>{{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          <li><a href="#{{ .ID }}" class="toc-link toc-link--{{ $level }}">{{ .Title }}</a>
+            {{- $prev = $level -}}
+          {{- end -}}
+          {{- if gt $prev 0 -}}
+            </li>
+            {{- range seq (sub $prev $min) -}}</ul></li>{{- end -}}
+          {{- end -}}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{{- end -}}

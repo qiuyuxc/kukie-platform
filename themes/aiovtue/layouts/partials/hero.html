@@ -1,0 +1,60 @@
+<section class="sakura-hero" id="hero">
+  <div class="sakura-hero__media hero-style {{ .Site.Params.hero.style | default `dot` }}">
+    <div class="sakura-hero-background" id="hero-media" data-fixed-img="{{ default true .Site.Params.hero.fixedImg }}">
+      <script type="application/json" id="hero-urls-data">{{ .Site.Params.hero.urls | jsonify }}</script>
+      <div class="sakura-hero-background-stage" id="hero-media-stage"></div>
+      <div class="sakura-hero__overlay"></div>
+    </div>
+    <div class="sakura-hero__waves" aria-hidden="true" style="--sakura-wave-front-mask: url('{{ `img/wave1.png` | relURL }}'); --sakura-wave-foreground-mask: url('{{ `img/wave2.png` | relURL }}');">
+      <div class="sakura-hero__wave-front"></div>
+      <div class="sakura-hero__wave-foreground"></div>
+    </div>
+  </div>
+  <div class="sakura-hero__content info-overlay">
+    <div class="sakura-hero-info-overlay">
+      <h1 class="sakura-hero__title sakura-glitch-text sakura-fade-in-down" data-text="{{ .Site.Params.hero.title }}">{{ .Site.Params.hero.title }}</h1>
+      <div class="sakura-slit-in-horizontal sakura-info-card">
+        <div class="sakura-social-card">
+          <div class="sakura-hitokoto-quote">
+            {{- $mottoRaw := .Site.Params.hero.motto -}}
+            {{- $mottos := slice -}}
+            {{- if reflect.IsSlice $mottoRaw -}}
+              {{- range $mottoRaw -}}
+                {{- $line := strings.TrimSpace (. | string) -}}
+                {{- if $line -}}{{- $mottos = $mottos | append $line -}}{{- end -}}
+              {{- end -}}
+            {{- else -}}
+              {{- $line := strings.TrimSpace ($mottoRaw | default "" | string) -}}
+              {{- if $line -}}{{- $mottos = slice $line -}}{{- end -}}
+            {{- end -}}
+            {{- $mottoFallback := "" -}}
+            {{- with $mottos -}}{{- $mottoFallback = index . 0 -}}{{- end -}}
+            <iconify-icon icon="fa6-solid:quote-left" class="sakura-hitokoto-quote-icon" aria-hidden="true"></iconify-icon>
+            <span class="sakura-hitokoto-text" id="hero-hitokoto" data-fallback="{{ $mottoFallback }}" data-enable-hitokoto="{{ default true .Site.Params.hero.enableHitokoto }}" data-typewriter="{{ default true .Site.Params.hero.typewriter }}" data-speed="{{ default 80 .Site.Params.hero.typewriterSpeed }}"></span>
+            <script type="application/json" id="hero-mottos-data">{{ $mottos | jsonify }}</script>
+            <iconify-icon icon="fa6-solid:quote-right" class="sakura-hitokoto-quote-icon" aria-hidden="true"></iconify-icon>
+          </div>
+          <div class="sakura-hero-social-row">
+            <img class="sakura-icon sakura-hero-media-arrow is-prev" id="hero-media-prev" src="{{ `img/hero-media-arrow.svg` | relURL }}" alt="Previous media" width="22" height="22" role="button" tabindex="0">
+            {{ range .Site.Params.social }}
+            <a href="{{ if hasPrefix .link `http` }}{{ .link }}{{ else }}{{ .link | relURL }}{{ end }}" aria-label="icon" target="_blank" rel="noopener" title="{{ .name }}" style="{{ with .color }}--sakura-color-icon: {{ . }}; color: {{ . }};{{ end }}">
+              {{ printf `<iconify-icon icon="%s" class="sakura-icon"></iconify-icon>` .icon | safeHTML }}
+            </a>
+            {{ end }}
+            <img class="sakura-icon sakura-hero-media-arrow" id="hero-media-next" src="{{ `img/hero-media-arrow.svg` | relURL }}" alt="Next media" width="22" height="22" role="button" tabindex="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sakura-hero__scroll">
+    <button type="button" class="sakura-scroll-down" id="hero-scroll-down" aria-label="向下滚动">
+      <iconify-icon icon="fa6-solid:angle-down" class="sakura-scroll-down-icon sakura-loop-float"></iconify-icon>
+    </button>
+  </div>
+  {{- with .Site.Params.hero.playerUrl -}}
+  <button type="button" class="sakura-hero__player" id="hero-player-btn" aria-label="播放视频" data-player-url="{{ . | relURL }}">
+    <img class="sakura-player sakura-loop-fly" id="hero-player-icon" src="{{ `img/hero-player-play.png` | relURL }}" data-play-src="{{ `img/hero-player-play.png` | relURL }}" data-pause-src="{{ `img/hero-player-pause.png` | relURL }}" alt="" width="32" height="32" decoding="async">
+  </button>
+  {{- end -}}
+</section>

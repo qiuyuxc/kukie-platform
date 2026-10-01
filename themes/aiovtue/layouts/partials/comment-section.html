@@ -1,0 +1,16 @@
+{{- $provider := default "twikoo" site.Params.comment.provider -}}
+{{- if ne $provider "kukie" -}}
+<section id="page-comment-section" class="sakura-comment sakura-page-comment" data-comment-provider="{{ $provider }}">
+  {{- if eq $provider "waline" -}}
+  <div
+    id="waline"
+    class="sakura-waline sakura-comment-root"
+    data-placeholder="{{ site.Params.waline.placeholder | default `分享你的想法...` }}"
+  ></div>
+  {{- else -}}
+  <div class="sakura-twikoo">
+    <div id="tcomment" class="sakura-comment-root"></div>
+  </div>
+  {{- end -}}
+</section>
+{{- end -}}

@@ -1,0 +1,10 @@
+{{- $min := .Params.tocStartLevel | default 3 -}}
+{{- $max := .Params.tocEndLevel | default 4 -}}
+{{- $showToc := false -}}
+{{- range findRESubmatch `<h([2-4]) id="([^"]+)"[^>]*>([\s\S]*?)</h[2-4]>` .Content -}}
+  {{- $level := int (index . 1) -}}
+  {{- if and (ge $level $min) (le $level $max) -}}
+    {{- $showToc = true -}}
+  {{- end -}}
+{{- end -}}
+{{- .Scratch.Set "hasToc" $showToc -}}

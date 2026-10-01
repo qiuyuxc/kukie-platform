@@ -1,0 +1,9 @@
+{{- $page := . -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = .Page -}}
+{{- end -}}
+{{- if $page.Params.pinned -}}
+<span class="sakura-post-pin" title="置顶" aria-label="置顶">
+  <iconify-icon icon="mdi:pin" aria-hidden="true"></iconify-icon>
+</span>
+{{- end -}}

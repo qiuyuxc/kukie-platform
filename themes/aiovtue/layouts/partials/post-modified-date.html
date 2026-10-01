@@ -1,0 +1,4 @@
+{{- $page := . -}}
+{{- $showDate := $page.Lastmod -}}
+{{- if $showDate.IsZero -}}{{- $showDate = $page.Date -}}{{- end -}}
+{{- return partial "page-date-meta.html" (dict "showDate" $showDate "displayFormat" "2006-01-02") -}}

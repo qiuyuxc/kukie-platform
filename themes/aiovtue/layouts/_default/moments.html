@@ -1,0 +1,48 @@
+{{ define "main" }}
+{{- $entries := .Pages.ByDate.Reverse -}}
+{{- $layout := default "memos" site.Params.moments.layout -}}
+{{- $cardMaxWidth := default "720px" site.Params.moments.cardMaxWidth -}}
+{{- $avatar := site.Params.author.avatar | default (site.Params.favicon | default `/favicon.png`) -}}
+{{- $authorName := site.Params.author.name | default site.Title -}}
+{{- $initialCount := 5 -}}
+{{- $loadBatch := 5 -}}
+{{- $visible := first $initialCount $entries -}}
+{{- $remaining := after $initialCount $entries -}}
+<article class="sakura-page sakura-moments-page sakura-moments-page--{{ $layout }}">
+  {{- partial "page-header.html" . -}}
+  <div class="moments-page moments-page--{{ $layout }}"{{ if eq $layout "cards" }} style="--moments-card-max-width: {{ $cardMaxWidth }};"{{ end }}>
+    <div class="moments-feed" id="moments-feed">
+      {{- if not $entries -}}
+        <p class="moments-feed__empty">还没有动态，去 content/moments/ 新建 Markdown 文件吧。</p>
+      {{- else -}}
+        {{- range $index, $page := $visible -}}
+          {{- partial "moments/page-entry.html" (dict
+            "page" $page
+            "index" $index
+            "layout" $layout
+            "avatar" $avatar
+            "authorName" $authorName
+          ) -}}
+        {{- end -}}
+        {{- if $remaining -}}
+          <div id="moments-more-data" hidden>
+            {{- range $index, $page := $remaining -}}
+              <template class="moments-more-item">
+                {{- partial "moments/page-entry.html" (dict
+                  "page" $page
+                  "index" (add $initialCount $index)
+                  "layout" $layout
+                  "avatar" $avatar
+                  "authorName" $authorName
+                ) -}}
+              </template>
+            {{- end -}}
+          </div>
+          <div class="moments-feed__sentinel" id="moments-feed-sentinel" data-batch-size="{{ $loadBatch }}" aria-hidden="true"></div>
+          <p class="moments-feed__status" id="moments-feed-status" hidden aria-live="polite"></p>
+        {{- end -}}
+      {{- end -}}
+    </div>
+  </div>
+</article>
+{{ end }}

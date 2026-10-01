@@ -1,0 +1,12 @@
+{{- if or (and (eq .Section "posts") .IsPage) (eq .Layout "about") (eq .Layout "gallery-post") -}}
+{{- $fontSize := "1rem" -}}
+{{- with site.Params.post -}}
+  {{- with .fontsize -}}
+    {{- $fontSize = printf "%v" . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (findRE `^[0-9]+(\.[0-9]+)?(rem|px|em)$` $fontSize) -}}
+  {{- $fontSize = "1rem" -}}
+{{- end -}}
+<style>:root{--sakura-post-font-size:{{ $fontSize }};}</style>
+{{- end -}}

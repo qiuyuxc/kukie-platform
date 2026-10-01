@@ -1,0 +1,8 @@
+{{- $page := .page -}}
+{{- $class := .class -}}
+{{- $meta := partial "page-date-meta.html" (dict "showDate" $page.Date "displayFormat" "2006年1月2日") -}}
+<p class="{{ $class }}">
+  <time datetime="{{ $meta.datetime }}"{{ if $meta.dateOnly }} data-date-only="true"{{ end }} data-absolute="{{ $meta.display }}">
+    {{- $meta.display -}}
+  </time>
+</p>

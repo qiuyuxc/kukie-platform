@@ -1,0 +1,24 @@
+{{- if not (partial "links-rss-enabled.html" .) -}}
+{{- /* disabled */ -}}
+{{- else -}}
+{{- $feeds := site.Data.links_rss.feeds | default slice -}}
+{{- if $feeds -}}
+<section
+  class="links-rss-spotlight"
+  id="links-rss-spotlight"
+  data-default-cover="{{ site.Params.defaultCover | default `/hero/tt3.png` | relURL }}"
+  hidden
+>
+  <header class="links-rss-spotlight__header">
+    <h2 class="links-preview-group__title">
+      <span>✨</span>
+      <span id="links-rss-spotlight-title">朋友动态</span>
+    </h2>
+    <p class="links-rss-spotlight__source" id="links-rss-spotlight-source">要去朋友们的文章看看吗~</p>
+  </header>
+  <p class="links-rss-spotlight__loading" id="links-rss-spotlight-loading" hidden>正在加载友链最新文章…</p>
+  <ul class="links-preview-grid" id="links-rss-spotlight-grid" hidden></ul>
+</section>
+<script type="application/json" id="links-rss-feeds">{{ $feeds | jsonify }}</script>
+{{- end -}}
+{{- end -}}

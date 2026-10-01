@@ -1,0 +1,40 @@
+{{- $paginator := .Paginator -}}
+{{- $anchor := "home-post-list" -}}
+{{- if reflect.IsMap . -}}
+  {{- $paginator = index . "Paginator" -}}
+  {{- with index . "Anchor" -}}{{- $anchor = . -}}{{- end -}}
+{{- end -}}
+{{ if gt $paginator.TotalPages 1 }}
+  {{ $cur := $paginator.PageNumber }}
+  {{ $total := $paginator.TotalPages }}
+  {{ $window := 2 }}
+  {{ if or (eq $cur 1) (eq $cur $total) }}{{ $window = 3 }}{{ end }}
+  <nav class="sakura-pagination-standard" aria-label="分页">
+    <div class="pagination">
+      {{ if gt $cur 1 }}
+      <a class="page-number" href="{{ $paginator.Prev.URL }}#{{ $anchor }}" aria-label="上一页">
+        <iconify-icon icon="ri:arrow-left-s-line" aria-hidden="true"></iconify-icon>
+      </a>
+      {{ end }}
+      {{ range $p := (seq $total) }}
+        {{ $show := or (eq $p 1) (eq $p $total) (and (gt $p (sub $cur $window)) (lt $p (add $cur $window))) }}
+        {{ if $show }}
+          {{ if eq $p $cur }}
+          <span class="page-number active" aria-current="page">{{ $p }}</span>
+          {{ else }}
+          <a class="page-number" href="{{ (index $paginator.Pagers (sub $p 1)).URL }}#{{ $anchor }}">{{ $p }}</a>
+          {{ end }}
+        {{ else if eq $p (sub $cur $window) }}
+        <span class="space" aria-hidden="true">...</span>
+        {{ else if eq $p (add $cur $window) }}
+        <span class="space" aria-hidden="true">...</span>
+        {{ end }}
+      {{ end }}
+      {{ if lt $cur $total }}
+      <a class="page-number" href="{{ $paginator.Next.URL }}#{{ $anchor }}" aria-label="下一页">
+        <iconify-icon icon="ri:arrow-right-s-line" aria-hidden="true"></iconify-icon>
+      </a>
+      {{ end }}
+    </div>
+  </nav>
+{{ end }}

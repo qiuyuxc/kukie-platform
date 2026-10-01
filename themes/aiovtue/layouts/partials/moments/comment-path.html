@@ -1,0 +1,6 @@
+{{- $page := . -}}
+{{- $path := $page.RelPermalink -}}
+{{- if not $path -}}
+  {{- $path = printf "/moments/%s/" $page.File.ContentBaseName -}}
+{{- end -}}
+{{- return $path -}}

@@ -1,0 +1,42 @@
+{{- $postPage := . -}}
+{{- range first 1 (where site.RegularPages "Section" "posts") -}}{{- $postPage = . -}}{{- end -}}
+{{- $static := slice -}}
+{{- $aliases := slice -}}
+{{- range site.RegularPages -}}
+  {{- if eq .Section "posts" -}}
+    {{- $slug := strings.TrimSuffix ".md" (strings.TrimPrefix "posts/" .File.Path) -}}
+    {{- $aliases = $aliases | append (dict "path" .RelPermalink "slug" $slug) -}}
+    {{- range .Aliases -}}
+      {{- $alias := strings.TrimPrefix "/_server" . -}}
+      {{- if not (path.Ext $alias) -}}{{- $alias = printf "%s/" (strings.TrimSuffix "/" $alias) -}}{{- end -}}
+      {{- $aliases = $aliases | append (dict "path" $alias "slug" $slug) -}}
+    {{- end -}}
+  {{- else if not (in (slice "/archives/" "/categories/" "/tags/" "/search/" "/notices/") .RelPermalink) -}}
+    {{- $static = $static | append .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- $tail := printf "%s%s%s%s%s" (partial "pjax-loader.html" .) (partial "search-modal.html" .) (partial "music-player.html" .) (partial "live2d-widget.html" .) (partial "scripts.html" .) -}}
+{{- dict
+  "version" 1
+  "title" site.Title
+  "description" site.Params.description
+  "base_url" site.BaseURL
+  "author" site.Params.author.name
+  "avatar" site.Params.author.avatar
+  "author_avatar" (printf "%s" (partial "author-avatar.html" (dict "alt" site.Params.author.name "width" 96 "height" 96 "play" true)))
+  "signature" (printf "%s" (partial "signature-inline.html" (dict)))
+  "sponsor" (printf "%s" (partial "sponsor.html" $postPage))
+  "license" site.Params.license
+  "default_cover" site.Params.defaultCover
+  "social" site.Params.social
+  "head" (printf "%s" (partial "head.html" .))
+  "post_head" (printf "%s" (partial "head.html" $postPage))
+  "navbar" (printf "%s" (partial "navbar.html" .))
+  "navbar_attrs" (printf "%s" (partial "navbar-layout-attrs.html" .))
+  "hero" (printf "%s" (partial "hero.html" .))
+  "footer" (printf "%s" (partial "footer.html" .))
+  "tail" $tail
+  "static_routes" $static
+  "aliases" $aliases
+  | jsonify
+-}}

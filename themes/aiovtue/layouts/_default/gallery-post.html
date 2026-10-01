@@ -1,0 +1,12 @@
+{{ define "main" }}
+<article class="sakura-page sakura-post sakura-gallery-post-page">
+  <div class="sakura-page-content sakura-gallery-post-body">
+    {{- partial "gallery-post/viewer.html" . -}}
+    <div class="sakura-gallery-post-footer">
+      {{- if ne .Params.comment false -}}
+      {{- partial "comment-section.html" . -}}
+      {{- end -}}
+    </div>
+  </div>
+</article>
+{{ end }}

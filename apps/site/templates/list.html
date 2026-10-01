@@ -1,0 +1,41 @@
+{{define "listing"}}
+<section class="sakura-home">
+{{if .Home}}{{.Site.Hero}}{{else}}<header class="site-page-heading"><h1>{{.Title}}</h1><p>{{.Listing.Total}} 篇公开文章</p></header>{{end}}
+<div class="sakura-home-layout is-layout-list is-desktop-list-item-cards is-mobile-cards-list" id="home-posts" data-home-layout="list" data-layout-primary="list" data-list-columns-primary="single" data-desktop-list-item-style="cards" data-layout-random="false" data-mobile-cards-layout="list" data-home-paginator-page="{{.Listing.Page}}">
+<div class="home-layout-variant" data-layout="list" data-list-columns="single" data-mobile-cards-list="true">
+<div class="home-list-layout has-sidebar">
+{{template "sidebar" .}}
+<div class="home-list-main"><div class="sakura-post-list home-post-list" id="home-post-list">
+{{if eq .Title "搜索"}}<form class="site-search" action="/search/" method="get" role="search"><label for="site-search-input">搜索标题、摘要和正文</label><div><input id="site-search-input" name="q" type="search" value="{{.Query}}" maxlength="200" placeholder="输入关键词…"><button type="submit">搜索</button></div></form>{{end}}
+{{if or (eq .Title "分类") .Category}}<nav class="site-terms" aria-label="分类筛选"><a href="/categories/">全部</a>{{range .Summary.Categories}}<a href="/categories/?category={{queryEscape .Name}}">{{.Name}} <small>{{.Count}}</small></a>{{end}}</nav>{{end}}
+{{if or (eq .Title "标签") .Tag}}<nav class="site-terms" aria-label="标签筛选"><a href="/tags/">全部</a>{{range .Summary.Tags}}<a href="/tags/?tag={{queryEscape .Name}}">{{.Name}} <small>{{.Count}}</small></a>{{end}}</nav>{{end}}
+{{if or (eq .Title "归档") .Month}}<nav class="site-terms" aria-label="月份筛选"><a href="/archives/">全部</a>{{range .Summary.Months}}<a href="/archives/?month={{queryEscape .Name}}">{{.Name}} <small>{{.Count}}</small></a>{{end}}</nav>{{end}}
+{{if eq .Kind "notices"}}
+<div class="site-notices">{{range .Summary.Notices}}<article><h2><a href="/notices/{{.ID}}/">{{.Title}}</a></h2><p class="site-notice-text">{{.Text}}</p></article>{{else}}<p class="site-empty">暂无公告。</p>{{end}}</div>
+{{else}}
+{{if .Home}}{{with .Summary.Notices}}<div class="home-mobile-notice-ticker" role="region" aria-label="公告"><div class="home-mobile-notice-ticker__viewport"><div class="home-mobile-notice-ticker__track"><div class="home-mobile-notice-ticker__group">{{range .}}<a class="home-mobile-notice-ticker__item" href="/notices/{{.ID}}/">{{.Title}}</a>{{end}}</div></div></div></div>{{end}}{{end}}
+{{if .Home}}{{template "featured" .}}{{end}}
+<div class="post-list-container post-list-container--cards post-list-container--desktop-list post-list-container--mobile-list home-cards-list">
+{{range $index, $post := .Listing.Posts}}
+<article class="sakura-post-card {{if odd $index}}right{{else}}left{{end}}">
+<a class="sakura-post-card__cover aspect-video" href="{{postPath .Slug}}"><img class="sakura-lazy-img loaded" src="{{cover .Cover}}" alt="{{.Title}}" loading="lazy" decoding="async"></a>
+<div class="sakura-post-card__content has-cover"><div class="sakura-post-card-info">
+<div class="sakura-post-date post-date"><span class="sakura-post-date__inner"><iconify-icon icon="mdi:clock-outline" class="sakura-icon sakura-post-date__icon" aria-hidden="true"></iconify-icon><span class="sakura-post-date__label">发表于</span><time datetime="{{.Date}}" data-date-only="true">{{.Date}}</time></span></div>
+<h2 class="sakura-post-title sakura-post-card__title"><a href="{{postPath .Slug}}" aria-label="阅读全文：{{.Title}}">{{.Title}}</a></h2>
+<div class="sakura-post-meta"><div class="sakura-post-categories"><a class="sakura-post-categories__link" href="/categories/?category={{queryEscape .Category}}"><iconify-icon icon="mdi:folder-open-outline" class="sakura-icon sakura-post-categories__icon" aria-hidden="true"></iconify-icon><span>{{.Category}}</span></a></div>
+<div class="sakura-post-tags">{{range .Tags}}<a class="sakura-post-tags__link" href="/tags/?tag={{queryEscape .}}"><iconify-icon icon="mdi:tag-multiple" class="sakura-icon sakura-post-tags__icon" aria-hidden="true"></iconify-icon><span>{{.}}</span></a>{{end}}</div></div>
+<div class="sakura-post-excerpt sakura-post-card__excerpt">{{.Description}}</div>
+</div></div></article>
+{{else}}<p class="site-empty">{{if .Query}}没有找到相关内容，试试其他关键词。{{else}}这里暂时没有公开文章。{{end}}</p>{{end}}
+</div>
+<nav class="site-pagination" aria-label="文章分页">{{if .Previous}}<a class="page-number" href="{{.Previous}}#home-post-list" rel="prev">上一页</a>{{end}}<span aria-current="page">第 {{.Listing.Page}} 页</span>{{if .Next}}<a class="page-number" href="{{.Next}}#home-post-list" rel="next">下一页</a>{{end}}</nav>
+{{end}}
+
+</div></div>
+{{template "right-sidebar" .}}
+</div></div></div></section>
+{{end}}
+
+{{define "featured"}}
+{{with .Summary.Featured}}<section class="home-list-featured" aria-label="推荐文章" style="--home-list-featured-visible-desktop:4;--home-list-featured-visible-mobile:2"><div class="home-list-featured__inner"><div class="home-list-featured__header"><h2 class="home-list-featured__heading"><iconify-icon icon="mdi:star-outline" class="sakura-icon home-list-featured__heading-icon" aria-hidden="true"></iconify-icon>要去这些文章看看吗</h2><div class="home-list-featured__navs"><button type="button" class="home-list-featured__nav home-list-featured__nav--prev" aria-label="上一组文章"><iconify-icon icon="mdi:chevron-left" aria-hidden="true"></iconify-icon></button><button type="button" class="home-list-featured__nav home-list-featured__nav--next" aria-label="下一组文章"><iconify-icon icon="mdi:chevron-right" aria-hidden="true"></iconify-icon></button></div></div><div class="home-list-featured__viewport"><div class="home-list-featured__track home-list-featured-track">{{range .}}<a class="home-list-featured-card" href="{{postPath .Slug}}" aria-label="阅读全文：{{.Title}}"><div class="home-list-featured-card__cover"><img class="sakura-lazy-img" src="{{cover .Cover}}" alt="{{.Title}}" loading="lazy"></div><div class="home-list-featured-card__body"><h3 class="home-list-featured-card__title">{{.Title}}</h3><p class="home-list-featured-card__excerpt">{{.Description}}</p></div></a>{{end}}</div></div></div></section>{{end}}
+{{end}}

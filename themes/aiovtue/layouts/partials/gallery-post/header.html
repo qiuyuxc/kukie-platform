@@ -1,0 +1,44 @@
+<header class="sakura-page-header sakura-post-header sakura-gallery-post-header" data-page="{{ .Section }}">
+  <div class="sakura-page-header__inner sakura-header-container">
+    <h1 class="sakura-page-header__title">
+      <span class="sakura-header-title">
+        <span class="sakura-page-header__text sakura-title">{{ .Title }}</span>
+      </span>
+    </h1>
+    <div class="sakura-post-header-meta sakura-post-meta">
+      <span class="sakura-post-date posted-time post-time">
+        <span class="sakura-post-date__inner" title="发表于{{ .Date.Format `2006-01-02` }}">
+          <iconify-icon icon="mdi:clock-outline" class="sakura-post-date__icon" aria-hidden="true"></iconify-icon>
+          <span class="sakura-post-date__label">发表于</span>
+          <time datetime="{{ .Date.Format `2006-01-02` }}" itemprop="datePublished">{{ .Date.Format `2006-01-02` }}</time>
+        </span>
+      </span>
+      {{- with .Params.categories -}}
+      <span class="sakura-post-header-meta__sep"> · </span>
+      <span class="sakura-post-header-meta__item">分类：
+        {{- if reflect.IsSlice . -}}
+        {{- range $i, $c := . -}}
+        {{- if $i }} / {{ end -}}
+        <a href="{{ `/categories/` | relLangURL }}?category={{ $c | urlquery }}">{{ $c }}</a>
+        {{- end -}}
+        {{- else -}}
+        <a href="{{ `/categories/` | relLangURL }}?category={{ . | urlquery }}">{{ . }}</a>
+        {{- end -}}
+      </span>
+      {{- end -}}
+      {{- with .Params.tags -}}
+      <span class="sakura-post-header-meta__sep"> · </span>
+      <span class="sakura-post-header-meta__item">标签：
+        {{- if reflect.IsSlice . -}}
+        {{- range $i, $t := . -}}
+        {{- if $i }}, {{ end -}}
+        <a href="{{ `/tags/` | relLangURL }}?tag={{ $t | urlquery }}">#{{ $t }}</a>
+        {{- end -}}
+        {{- else -}}
+        <a href="{{ `/tags/` | relLangURL }}?tag={{ . | urlquery }}">#{{ . }}</a>
+        {{- end -}}
+      </span>
+      {{- end -}}
+    </div>
+  </div>
+</header>

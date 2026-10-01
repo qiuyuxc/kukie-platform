@@ -1,0 +1,78 @@
+
+
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+{{- partial "anti-translate.html" . -}}
+{{- partial "cdn-preconnect.html" . -}}
+{{- if partial "signature-needed.html" . -}}
+<meta name="sakura-signature-script" content="{{ `/signature/signature.js` | relURL }}">
+{{- end -}}
+{{- $favicon := .Site.Params.favicon | default `/favicon.png` -}}
+<link rel="icon" href="{{ $favicon | relURL }}" type="image/png">
+{{- partial "loader-head.html" . -}}
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else if eq .Kind "404" }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+{{- $desc := .Description | default .Site.Params.description -}}
+{{- $ogTitle := cond .IsHome .Site.Title (cond (eq .Kind "404") .Site.Title .Title) -}}
+{{- $ogType := cond (in (slice "posts" "excalidraw") .Section) "article" "website" -}}
+{{- $coverRaw := partial "post-cover.html" . | default $favicon -}}
+{{- $ogImage := $coverRaw -}}
+{{- $coverLower := lower $coverRaw -}}
+{{- if or (hasSuffix $coverLower ".mp4") (hasSuffix $coverLower ".webm") (hasSuffix $coverLower ".ogg") -}}
+  {{- $ogImage = $favicon -}}
+{{- end -}}
+{{- if not (hasPrefix $ogImage "http") }}{{ $ogImage = $ogImage | absURL }}{{ end -}}
+<meta name="description" content="{{ $desc }}">
+{{- with .Site.Params.pjax -}}
+{{- if .enable -}}
+<meta name="sakura-pjax" content="1" data-fade="{{ default 200 .fadeDuration }}" data-mount-delay="{{ default 120 .mountDelay }}" data-loader="{{ if isset . `loader` }}{{ if .loader }}1{{ else }}0{{ end }}{{ else }}1{{ end }}">
+{{- end -}}
+{{- end -}}
+{{- if partial "mouse-enabled.html" . -}}
+{{- $mouse := .Site.Params.mouse | default dict -}}
+<meta name="sakura-mouse-style" content="1" data-path="{{ default `/mouse/tuantuanma/` $mouse.path | relURL }}">
+{{- end -}}
+{{- partial "site-effects-config.html" . -}}
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ "sitemap.xml" | absURL }}">
+<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "index.xml" | absURL }}">
+{{- $commentProvider := default "twikoo" site.Params.comment.provider -}}
+<meta name="sakura-comment-provider" content="{{ $commentProvider }}">
+{{- if eq $commentProvider "waline" -}}
+  {{- with site.Params.waline.serverURL -}}
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@3.15.2/dist/waline.css">
+<meta name="sakura-waline-server" content="{{ . }}">
+  {{- end -}}
+{{- else if eq $commentProvider "twikoo" -}}
+{{- with or site.Params.twikoo.envId (index site.Params.twikoo "envid") -}}
+<meta name="sakura-twikoo-env" content="{{ . }}">
+{{- end -}}
+{{- end -}}
+<meta property="og:locale" content="zh-CN">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ $ogTitle }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:image" content="{{ $ogImage }}">
+<meta property="og:type" content="{{ $ogType }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $ogTitle }}">
+<meta name="twitter:description" content="{{ $desc }}">
+<meta name="twitter:image" content="{{ $ogImage }}">
+{{- $themeVars := resources.Get "css/theme-vars.scss" | resources.ExecuteAsTemplate "css/theme-vars.scss" . | css.Sass | minify -}}
+<style>{{ $themeVars.Content | safeCSS }}</style>
+{{- partial "post-font-size-style.html" . -}}
+{{ if .IsHome }}<style>:root{--sakura-hero-placeholder:#fafafa;--sakura-hero-placeholder-from:#f5f5f5;--sakura-hero-placeholder-to:#fff}html.dark{--sakura-hero-placeholder:#e8e8e8;--sakura-hero-placeholder-from:#ececec;--sakura-hero-placeholder-to:#e0e0e0}html.is-home,html.is-home body{background:var(--sakura-hero-placeholder)}html.dark.is-home,html.dark.is-home body{background:#1a1a1a}</style>{{ end }}
+<link rel="stylesheet" href="{{ "fonts/lxgw-wenkai-screen/style.css" | relURL }}">
+{{ $css := resources.Get "css/main.scss" | css.Sass | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{- partial "hero-grid-style.html" . -}}
+{{- partial "page-styles.html" . -}}
+{{ block "head-extra" . }}{{ end }}
+{{- if or (.Store.Get "hasMath") (and .Params.math (or (eq .Section "posts") (eq .Layout "about"))) -}}
+<link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}">
+{{- end -}}
+{{- partial "moments-script-meta.html" . -}}
+{{- partial "excalidraw-script-meta.html" . -}}
+{{- partial "gallery-post-script-meta.html" . -}}
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>

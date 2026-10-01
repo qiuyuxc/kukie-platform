@@ -1,0 +1,4 @@
+{{- if and .IsPage (or (eq .Section "excalidraw") (eq .Layout "excalidraw")) -}}
+{{- $excalidrawJs := partial "excalidraw/init-js-resource.html" . -}}
+<script src="{{ $excalidrawJs.RelPermalink }}" integrity="{{ $excalidrawJs.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{- end -}}

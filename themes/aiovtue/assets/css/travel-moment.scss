@@ -1,0 +1,170 @@
+// 动态时间线条目（memos 布局）与旅途足迹共用
+.travel-moment {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 10px 12px;
+  padding: 16px 14px;
+  scroll-margin-top: 72px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sakura-color-border) 65%, transparent);
+  transition:
+    background-color var(--va-transition-duration, 0.3s) ease,
+    border-color var(--va-transition-duration, 0.3s) ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.is-active {
+    background: color-mix(in srgb, var(--va-c-primary) 6%, var(--sakura-color-background));
+  }
+
+  &__avatar {
+    display: block;
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: color-mix(in srgb, var(--va-c-primary) 10%, var(--sakura-color-background));
+    pointer-events: none;
+  }
+
+  &__main {
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0 0 4px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: color-mix(in srgb, var(--va-c-primary) 82%, var(--sakura-color-text-deep));
+  }
+
+  &__title {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--sakura-color-text-deep);
+  }
+
+  &__text {
+    margin: 0 0 10px;
+    font-size: 0.94rem;
+    line-height: 1.65;
+    color: var(--sakura-color-text);
+    word-break: break-word;
+
+    &--plain {
+      white-space: pre-line;
+    }
+  }
+
+  &__photos {
+    display: grid;
+    gap: 4px;
+    width: unquote("min(100%, 280px)");
+    margin-bottom: 8px;
+
+    &--count-1 {
+      width: unquote("min(72%, 240px)");
+
+      .travel-moment__photo {
+        aspect-ratio: auto;
+        max-height: 280px;
+
+        img {
+          height: auto;
+          max-height: 280px;
+          object-fit: cover;
+        }
+
+        video {
+          height: auto;
+          max-height: 280px;
+          object-fit: cover;
+        }
+      }
+    }
+
+    &--count-2,
+    &--count-4 {
+      grid-template-columns: repeat(2, 1fr);
+      width: unquote("min(68%, 220px)");
+    }
+
+    &--count-3,
+    &--count-5,
+    &--count-6,
+    &--count-7,
+    &--count-8,
+    &--count-9 {
+      grid-template-columns: repeat(3, 1fr);
+      width: unquote("min(78%, 280px)");
+    }
+  }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: zoom-in;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    background: color-mix(in srgb, var(--sakura-color-border) 40%, var(--sakura-color-background));
+
+    img,
+    video {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+  }
+
+  &__meta {
+    margin: 0;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: var(--sakura-color-text-muted);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 2px;
+  }
+}
+
+@media (max-width: 767px) {
+  .travel-moment {
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .travel-moment__photos--count-1 {
+    width: unquote("min(78%, 260px)");
+  }
+
+  .travel-moment__photos--count-2,
+  .travel-moment__photos--count-4 {
+    width: unquote("min(74%, 240px)");
+  }
+
+  .travel-moment__photos--count-3,
+  .travel-moment__photos--count-5,
+  .travel-moment__photos--count-6,
+  .travel-moment__photos--count-7,
+  .travel-moment__photos--count-8,
+  .travel-moment__photos--count-9 {
+    width: unquote("min(86%, 280px)");
+  }
+}

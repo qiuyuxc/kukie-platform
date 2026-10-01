@@ -1,0 +1,512 @@
+.sakura-gallery-post-page {
+  --sakura-gallery-nav-size: 44px;
+  --sakura-gallery-nav-gap: 14px;
+  --sakura-gallery-footer-max-width: 900px;
+  --sakura-gallery-footer-side-inset: 3rem;
+
+  .sakura-page-content {
+    max-width: 1080px;
+    padding-top: var(--sakura-navbar-layout-offset);
+    padding-bottom: 0;
+  }
+}
+
+.sakura-gallery-post-intro {
+  display: none;
+  margin-bottom: 0;
+  font-size: var(--sakura-post-font-size, 1rem);
+}
+
+.sakura-gallery-post-viewer {
+  --sakura-gallery-frame-height: #{unquote("min(70vh, 640px)")};
+  min-height: calc(100dvh - var(--sakura-navbar-layout-offset));
+  margin: 0 0 1.5rem;
+}
+
+.sakura-gallery-post-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  min-height: calc(100dvh - var(--sakura-navbar-layout-offset));
+}
+
+.sakura-gallery-post-main {
+  width: 100%;
+  min-width: 0;
+}
+
+.sakura-gallery-post-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.85rem;
+}
+
+.sakura-gallery-post-stage {
+  min-width: 0;
+}
+
+.sakura-gallery-post-track {
+  position: relative;
+}
+
+.sakura-gallery-post-slide {
+  margin: 0;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+.sakura-gallery-post-frame {
+  position: relative;
+  width: 100%;
+  height: var(--sakura-gallery-frame-height);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sakura-color-background);
+  box-shadow: 0 4px 24px color-mix(in srgb, #000 10%, transparent);
+}
+
+.sakura-gallery-post-frame__viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.sakura-gallery-post-media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+  position: relative;
+
+  &[data-media-type='video'] {
+    cursor: zoom-in;
+  }
+
+  &.is-playing {
+    .sakura-gallery-post-media__play {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .sakura-gallery-post-media__el {
+      pointer-events: auto;
+    }
+  }
+
+  &__el {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+    background: var(--sakura-color-background);
+  }
+
+  &__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+
+    svg {
+      width: 56px;
+      height: 56px;
+      fill: rgba(255, 255, 255, 0.92);
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+      pointer-events: none;
+    }
+  }
+}
+
+.sakura-gallery-post-danmaku {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sakura-gallery-post-danmaku__screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.sakura-gallery-post-danmaku__fallback {
+  display: none;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  margin: 0;
+  padding: 10px 12px;
+  max-height: 38%;
+  overflow: auto;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--sakura-color-text);
+  background: color-mix(in srgb, var(--sakura-color-background) 88%, transparent);
+  pointer-events: auto;
+
+  p {
+    margin: 0 0 0.65em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.sakura-gallery-post-danmaku__item {
+  position: absolute;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: max-content;
+  max-width: none;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  min-height: 28px;
+  height: auto;
+  white-space: nowrap;
+  box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  will-change: transform;
+}
+
+html.dark .sakura-gallery-post-danmaku__item {
+  background: rgba(255, 255, 255, 0.82);
+  color: #1f1f1f;
+  text-shadow: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-gallery-post-danmaku__screen {
+    display: none;
+  }
+
+  .sakura-gallery-post-danmaku__fallback {
+    display: block;
+  }
+}
+
+.sakura-gallery-post-counter {
+  margin-top: 0;
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--sakura-color-text-muted);
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.sakura-gallery-post-thumbs {
+  --sakura-gallery-thumb-size: 56px;
+  --sakura-gallery-thumb-gap: 10px;
+
+  display: none;
+  position: relative;
+  margin-top: 0.85rem;
+  overflow: hidden;
+}
+
+.sakura-gallery-post-thumbs__indicator {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 2;
+  width: var(--sakura-gallery-thumb-size);
+  height: var(--sakura-gallery-thumb-size);
+  border: 2px solid var(--sakura-color-primary);
+  border-radius: 8px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sakura-color-primary) 35%, transparent);
+}
+
+.sakura-gallery-post-thumbs__track {
+  display: flex;
+  gap: var(--sakura-gallery-thumb-gap);
+  align-items: center;
+  width: max-content;
+  padding: 8px 0;
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+.sakura-gallery-post-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--sakura-gallery-thumb-size);
+  height: var(--sakura-gallery-thumb-size);
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--sakura-color-primary) 6%, var(--sakura-color-background));
+  opacity: 0.72;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.is-active,
+  &[aria-selected='true'] {
+    opacity: 1;
+  }
+}
+
+.sakura-gallery-post-thumb__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  background: var(--sakura-color-background);
+}
+
+.sakura-gallery-post-thumb__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: #fff;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+  }
+}
+
+.sakura-gallery-post-nav {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--sakura-gallery-nav-size);
+  height: var(--sakura-gallery-nav-size);
+  padding: 0;
+  border: 1px solid var(--sakura-color-divider);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sakura-color-background) 88%, transparent);
+  color: var(--sakura-color-text);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 2px 10px color-mix(in srgb, #000 6%, transparent);
+
+  iconify-icon {
+    font-size: 1.1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--sakura-color-primary) 10%, var(--sakura-color-background));
+    border-color: color-mix(in srgb, var(--sakura-color-primary) 35%, var(--sakura-color-divider));
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sakura-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.sakura-gallery-post-empty {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--sakura-color-divider);
+  border-radius: 10px;
+  color: var(--sakura-color-text-muted);
+  background: color-mix(in srgb, var(--sakura-color-primary) 4%, var(--sakura-color-background));
+  line-height: 1.7;
+}
+
+.sakura-gallery-post-footer {
+  margin-inline: 0;
+
+  .sakura-comment {
+    margin-top: 24px;
+  }
+}
+
+html.dark .sakura-gallery-post-frame {
+  box-shadow: 0 4px 28px color-mix(in srgb, #000 36%, transparent);
+}
+
+@media (min-width: 769px) {
+  .sakura-gallery-post-center {
+    padding-bottom: 2rem;
+  }
+
+  .sakura-gallery-post-footer {
+    box-sizing: border-box;
+    width: #{unquote("min(var(--sakura-gallery-footer-max-width), calc(100% - 2 * var(--sakura-gallery-footer-side-inset)))")};
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sakura-gallery-post-page {
+    .sakura-page-content {
+      padding-top: var(--sakura-navbar-layout-offset);
+      padding-bottom: 0;
+      padding-inline: 0;
+    }
+  }
+
+  .sakura-gallery-post-viewer {
+    --sakura-gallery-mobile-main-gap: 0.85rem;
+
+    position: relative;
+    display: block;
+    height: calc(100dvh - var(--sakura-navbar-layout-offset));
+    min-height: calc(100dvh - var(--sakura-navbar-layout-offset));
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .sakura-gallery-post-center {
+    display: block;
+    position: relative;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .sakura-gallery-post-controls {
+    display: none;
+  }
+
+  .sakura-gallery-post-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sakura-gallery-mobile-main-gap);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .sakura-gallery-post-stage {
+    position: static;
+    transform: none;
+    flex: 0 0 auto;
+  }
+
+  .sakura-gallery-post-track {
+    display: block;
+  }
+
+  .sakura-gallery-post-footer {
+    margin-inline: 0;
+    padding-inline: var(--sakura-content-padding-x, 20px);
+  }
+
+  .sakura-gallery-post-intro {
+    display: none;
+  }
+
+  .sakura-gallery-post-thumbs:not([hidden]) {
+    display: block;
+  }
+
+  .sakura-gallery-post-thumbs {
+    position: static;
+    top: auto;
+    flex: 0 0 auto;
+    margin-top: 0;
+    pointer-events: auto;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .sakura-gallery-post-thumbs__indicator {
+    display: none;
+  }
+
+  .sakura-gallery-post-thumb.is-active,
+  .sakura-gallery-post-thumb[aria-selected='true'] {
+    box-shadow: 0 0 0 2px var(--sakura-color-primary);
+  }
+
+  .sakura-gallery-post-frame {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    border-radius: 0;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .sakura-gallery-post-media__play svg {
+    width: 44px;
+    height: 44px;
+  }
+
+  .sakura-gallery-post-danmaku__item {
+    font-size: 0.84rem;
+    min-height: 26px;
+    padding: 3px 12px;
+  }
+}
+
+html.hero-style-grid {
+  .sakura-gallery-post-page .sakura-page-content,
+  .sakura-gallery-post-viewer,
+  .sakura-gallery-post-center,
+  .sakura-gallery-post-main,
+  .sakura-gallery-post-stage,
+  .sakura-gallery-post-slide,
+  .sakura-gallery-post-frame,
+  .sakura-gallery-post-frame__viewport,
+  .sakura-gallery-post-media,
+  .sakura-gallery-post-media__el,
+  .sakura-gallery-post-thumb,
+  .sakura-gallery-post-thumb__media {
+    background: transparent;
+    background-color: transparent;
+  }
+
+  .sakura-gallery-post-frame {
+    box-shadow: none;
+  }
+}
