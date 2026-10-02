@@ -179,6 +179,7 @@ func TestContentAndSessionBoundaries(test *testing.T) {
 		request := httptest.NewRequest("POST", "/api/v1/auth/logout", strings.NewReader("{}"))
 		request.AddCookie(&http.Cookie{Name: "kukie_session", Value: readerToken})
 		request.Header.Set("Origin", "http://localhost:8085")
+		request.Host = "localhost:8085"
 		response := httptest.NewRecorder()
 		fixture.handler.ServeHTTP(response, request)
 		if response.Code != 403 {
@@ -187,6 +188,7 @@ func TestContentAndSessionBoundaries(test *testing.T) {
 		request = httptest.NewRequest("POST", "/api/v1/auth/logout", strings.NewReader("{}"))
 		request.AddCookie(&http.Cookie{Name: "kukie_session", Value: readerToken})
 		request.Header.Set("Origin", "http://localhost:8085")
+		request.Host = "localhost:8085"
 		request.Header.Set("X-CSRF-Token", fixture.app.keyed("csrf:"+readerToken))
 		response = httptest.NewRecorder()
 		fixture.handler.ServeHTTP(response, request)

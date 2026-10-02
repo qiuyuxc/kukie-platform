@@ -22,6 +22,9 @@ func (app *server) configureIndexNow() error {
 	if app.site == nil {
 		return errors.New("IndexNow requires an enabled site")
 	}
+	if app.site.manifest.BaseURL == "" {
+		return errors.New("IndexNow requires KUKIE_SITE_URL set to the public HTTPS origin")
+	}
 	if !regexp.MustCompile(`^[a-zA-Z0-9-]{8,128}$`).MatchString(key) {
 		return errors.New("invalid IndexNow key")
 	}

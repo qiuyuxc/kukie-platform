@@ -33,8 +33,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      SITE_URL: ${{ vars.KUKIE_SITE_URL || 'https://www.kukie.cn' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
@@ -62,7 +60,6 @@ jobs:
           load: true
           platforms: linux/amd64
           tags: kukie-smoke:ci
-          build-args: KUKIE_SITE_URL=${{ env.SITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Verify packaged runtime
@@ -84,7 +81,6 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.names.outputs.tags }}
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          build-args: KUKIE_SITE_URL=${{ env.SITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Published digest

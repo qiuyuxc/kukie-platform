@@ -10,9 +10,11 @@
 
 ## 部署
 
-推荐使用 Docker Compose。完整步骤见 [Docker 部署](docs/docker.md)，包括 HTTPS、初始化、备份、升级和回滚。
+推荐使用 Docker Compose，也可以直接在 1Panel 等面板里导入编排。完整步骤见 [Docker 部署](docs/docker.md)，包括面板导入、国内镜像源、初始化、备份、升级和回滚。国内机器先跑 `deploy/detect-region.sh` 可自动选用更快的镜像源。
 
-镜像：`ghcr.io/qiuyuxc/kukie-platform`，仅支持 `linux/amd64`（x86_64）。默认构建域名为 `https://www.kukie.cn`；更换域名需重新构建镜像，不能只改运行时变量。
+镜像：`ghcr.io/qiuyuxc/kukie-platform`，仅支持 `linux/amd64`（x86_64）。镜像不绑定站点域名，网站和后台默认同源调用各自的 API，无需配置 API 地址或来源白名单。完整 API 入口保留给原生 App，通过 HTTPS 反向代理对外提供。
+
+`KUKIE_SITE_URL` 是可选的运行时公开地址，用于固定规范链接及 IndexNow；留空时页面链接跟随访问地址。换域名不需要重新构建镜像。HTTPS 反代保留 `KUKIE_SECURE_COOKIE=1`，HTTP 直连改为 `0`。
 
 GitHub Actions 在主分支推送后执行测试、镜像运行检查并发布镜像。构建不会自动重启生产服务器，部署者自行选择升级时间。
 
@@ -21,8 +23,6 @@ GitHub Actions 在主分支推送后执行测试、镜像运行检查并发布�
 需要 Node.js 22.12+、Go 1.26+、C 编译器，以及 Hugo Extended 0.167.0。Hugo 只用于生成主题资源与静态附属页，不参与线上文章发布；运行容器不包含 Hugo 或 Node.js。
 
 ```sh
-export KUKIE_SITE_URL=http://127.0.0.1:8086
-export KUKIE_CONSOLE_ORIGINS=http://127.0.0.1:8085
 export KUKIE_SECURE_COOKIE=0
 npm run build
 npm start

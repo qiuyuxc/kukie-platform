@@ -140,8 +140,10 @@ func openServer(directory, repository string) (*server, error) {
 		return nil, err
 	}
 	app := &server{db: database, directory: directory, repository: repository, key: key, buckets: make(map[string]rateBucket), origins: make(map[string]bool), secureCookie: os.Getenv("KUKIE_SECURE_COOKIE") == "1", allowPrivateStorage: os.Getenv("KUKIE_ALLOW_PRIVATE_STORAGE") == "1", sendMail: deliverMail}
-	for _, origin := range strings.Split(env("KUKIE_CONSOLE_ORIGINS", "http://localhost:8085,http://127.0.0.1:8085"), ",") {
-		app.origins[strings.TrimSpace(origin)] = true
+	for _, origin := range strings.Split(os.Getenv("KUKIE_CONSOLE_ORIGINS"), ",") {
+		if origin = strings.TrimSpace(origin); origin != "" {
+			app.origins[origin] = true
+		}
 	}
 	var admins int
 	if err = database.QueryRow("SELECT COUNT(*) FROM users WHERE role='admin'").Scan(&admins); err != nil {

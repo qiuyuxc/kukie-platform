@@ -15,6 +15,11 @@ import (
 
 func siteFixture(test *testing.T) fixture {
 	test.Helper()
+	return siteFixtureAtOrigin(test, "https://blog.example.test")
+}
+
+func siteFixtureAtOrigin(test *testing.T, origin string) fixture {
+	test.Helper()
 	fixture := newFixture(test)
 	directory := test.TempDir()
 	if err := os.MkdirAll(filepath.Join(directory, "_server", "templates"), 0700); err != nil {
@@ -37,11 +42,19 @@ func siteFixture(test *testing.T) fixture {
 		}
 	}
 	manifest := map[string]any{"version": 1, "title": "测试小站", "base_url": "https://blog.example.test/", "head": `<meta charset="utf-8"><title>STALE TITLE</title><meta name="description" content="STALE DESC"><link rel="canonical" href="https://old.invalid/"><script type="application/ld+json">{"url":"STALE SCHEMA"}</script>`, "post_head": `<meta charset="utf-8"><title>STALE POST</title>`, "assets": []string{"/safe.css", "/escape.css"}, "author": "测试作者", "default_cover": "/cover.png", "aliases": []map[string]string{{"path": "/legacy.html", "slug": "nested/中文"}}}
+	manifest["navbar"] = `<nav><a href="https://blog.example.test/">首页</a></nav>`
+	manifest["static_routes"] = []string{"/about/"}
 	data, _ := json.Marshal(manifest)
 	if err = os.WriteFile(filepath.Join(directory, "_server", "site.json"), data, 0600); err != nil {
 		test.Fatal(err)
 	}
 	if err = os.WriteFile(filepath.Join(directory, "public", "safe.css"), []byte("body{}"), 0600); err != nil {
+		test.Fatal(err)
+	}
+	if err = os.Mkdir(filepath.Join(directory, "public", "about"), 0700); err != nil {
+		test.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(directory, "public", "about", "index.html"), []byte(`<!DOCTYPE html><link rel="canonical" href="https://blog.example.test/about/"><a href="https://blog.example.test/">首页</a><a href="https://blog.example.test.external.test/">外部链接</a>`), 0600); err != nil {
 		test.Fatal(err)
 	}
 	if err = os.Symlink(filepath.Join(directory, "_server", "site.json"), filepath.Join(directory, "public", "escape.css")); err != nil {
@@ -51,7 +64,7 @@ func siteFixture(test *testing.T) fixture {
 	if err != nil {
 		test.Fatal(err)
 	}
-	if err = fixture.app.loadSite(directory, "https://blog.example.test"); err != nil {
+	if err = fixture.app.loadSite(directory, origin); err != nil {
 		test.Fatal(err)
 	}
 	test.Cleanup(func() { fixture.app.site.root.Close() })
@@ -181,12 +194,15 @@ func TestBuiltSiteBundle(test *testing.T) {
 	if err = fixture.app.importPosts(); err != nil {
 		test.Fatal(err)
 	}
-	if err = fixture.app.loadSite(directory, ""); err != nil {
+	if err = fixture.app.loadSite(directory, "https://runtime.example.test"); err != nil {
 		test.Fatal(err)
 	}
 	defer fixture.app.site.root.Close()
 	for _, path := range []string{"/", "/posts/cloudflare/subtrack-tutorial/", "/about/", "/links/", "/tags/", "/search/?q=Cloudflare"} {
-		siteCall(test, fixture, path, 200)
+		body := siteCall(test, fixture, path, 200).Body.String()
+		if !strings.Contains(body, "https://runtime.example.test/") || strings.Contains(body, fixture.app.site.bundleOrigin+"/") {
+			test.Fatalf("built page %s retains its build origin", path)
+		}
 	}
 	siteCall(test, fixture, "/p/tunnel-manager/", 308)
 	for _, asset := range fixture.app.site.manifest.Assets {

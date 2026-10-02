@@ -36,8 +36,7 @@ type feedDocument struct {
 	Channel feedChannel `xml:"channel"`
 }
 
-func (app *server) siteIndex(writer http.ResponseWriter, request *http.Request) {
-	site := app.site
+func (app *server) siteIndex(writer http.ResponseWriter, request *http.Request, site *blogSite) {
 	if request.URL.Path == "/robots.txt" {
 		writer.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		if request.Method != "HEAD" {

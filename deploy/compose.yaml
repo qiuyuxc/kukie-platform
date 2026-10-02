@@ -1,20 +1,22 @@
-name: kukie
+# Kukie 编排文件。默认只启动 kukie 一个服务，反向代理交给宿主机或面板。
+# 需要内置 Caddy 自动申请证书时，再启用 edge 配置文件（会占用 80/443）：
+#   docker compose --profile edge up -d
 services:
   kukie:
     image: ${KUKIE_IMAGE:-ghcr.io/qiuyuxc/kukie-platform:latest}
     platform: linux/amd64
     restart: unless-stopped
     environment:
-      KUKIE_SITE_URL: ${KUKIE_SITE_URL:?Set KUKIE_SITE_URL to the origin used when building}
-      KUKIE_CONSOLE_ORIGINS: https://${KUKIE_CONSOLE_HOST:?Set KUKIE_CONSOLE_HOST}
-      KUKIE_SECURE_COOKIE: "1"
+      KUKIE_SITE_URL: ${KUKIE_SITE_URL:-}
+      KUKIE_CONSOLE_ORIGINS: ${KUKIE_CONSOLE_ORIGINS:-}
+      KUKIE_SECURE_COOKIE: "${KUKIE_SECURE_COOKIE:-1}"
       KUKIE_INDEXNOW_KEY: ${KUKIE_INDEXNOW_KEY:-}
     volumes:
       - kukie_data:/data
     ports:
-      - "127.0.0.1:8084:8084"
-      - "127.0.0.1:8085:8085"
-      - "127.0.0.1:8086:8086"
+      - "${KUKIE_BIND:-127.0.0.1}:${KUKIE_SITE_PORT:-8086}:8086"
+      - "${KUKIE_BIND:-127.0.0.1}:${KUKIE_CONSOLE_PORT:-8085}:8085"
+      - "${KUKIE_BIND:-127.0.0.1}:${KUKIE_API_PORT:-8084}:8084"
     read_only: true
     tmpfs:
       - /tmp:size=64m,mode=1777
@@ -24,19 +26,21 @@ services:
       - no-new-privileges:true
     stop_grace_period: 30s
   caddy:
+    profiles:
+      - edge
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on:
       kukie:
         condition: service_healthy
     environment:
-      KUKIE_SITE_HOST: ${KUKIE_SITE_HOST:?Set KUKIE_SITE_HOST}
-      KUKIE_CONSOLE_HOST: ${KUKIE_CONSOLE_HOST:?Set KUKIE_CONSOLE_HOST}
-      KUKIE_API_HOST: ${KUKIE_API_HOST:?Set KUKIE_API_HOST}
+      KUKIE_SITE_HOST: ${KUKIE_SITE_HOST:-}
+      KUKIE_CONSOLE_HOST: ${KUKIE_CONSOLE_HOST:-}
+      KUKIE_API_HOST: ${KUKIE_API_HOST:-}
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "${KUKIE_HTTP_PORT:-80}:80"
+      - "${KUKIE_HTTPS_PORT:-443}:443"
+      - "${KUKIE_HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

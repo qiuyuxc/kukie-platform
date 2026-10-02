@@ -56,7 +56,7 @@ func TestSiteCommentCookieAuthAndBoundary(test *testing.T) {
 	fixture := siteFixture(test)
 	handler := fixture.app.siteHandler()
 	post := func(path, body, origin, csrf string, cookie *http.Cookie) *httptest.ResponseRecorder {
-		request := httptest.NewRequest("POST", path, strings.NewReader(body))
+		request := httptest.NewRequest("POST", "https://blog.example.test"+path, strings.NewReader(body))
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Origin", origin)
 		request.Header.Set("X-CSRF-Token", csrf)

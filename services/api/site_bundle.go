@@ -48,6 +48,7 @@ type siteManifest struct {
 
 type blogSite struct {
 	manifest           siteManifest
+	bundleOrigin       string
 	templates          *template.Template
 	root               *os.Root
 	assets             map[string]bool
@@ -59,7 +60,7 @@ type blogSite struct {
 
 func siteOrigin(value string) (string, error) {
 	parsed, err := url.Parse(value)
-	if err != nil || (parsed.Scheme != "https" && parsed.Scheme != "http") || parsed.Host == "" || parsed.User != nil || (parsed.Path != "" && parsed.Path != "/") || parsed.RawQuery != "" || parsed.Fragment != "" {
+	if err != nil || (parsed.Scheme != "https" && parsed.Scheme != "http") || parsed.Hostname() == "" || parsed.User != nil || (parsed.Path != "" && parsed.Path != "/") || strings.ContainsAny(value, "?#") || strings.ContainsAny(parsed.Host, "\"'<>&\\ \t\r\n") {
 		return "", errors.New("site URL must be an HTTP(S) origin")
 	}
 	return parsed.Scheme + "://" + parsed.Host, nil
@@ -81,16 +82,14 @@ func (app *server) loadSite(directory, baseURL string) error {
 	if err != nil {
 		return err
 	}
+	site.bundleOrigin = origin
+	site.manifest.BaseURL = ""
 	if baseURL != "" {
-		configured, originErr := siteOrigin(baseURL)
-		if originErr != nil {
-			return originErr
-		}
-		if configured != origin {
-			return errors.New("KUKIE_SITE_URL differs from the bundle; rebuild for this origin")
+		site.manifest.BaseURL, err = siteOrigin(baseURL)
+		if err != nil {
+			return err
 		}
 	}
-	site.manifest.BaseURL = origin
 	site.homeHead, site.postHead = metadataFreeHead(site.manifest.Head), metadataFreeHead(site.manifest.PostHead)
 	functions := template.FuncMap{"postPath": postPath, "queryEscape": url.QueryEscape, "cover": func(value string) string {
 		if value != "" && safeImageURL(value) {
@@ -146,6 +145,11 @@ func (app *server) loadSite(directory, baseURL string) error {
 	app.site = site
 	success = true
 	return nil
+}
+
+func (site *blogSite) rebaseHTML(data []byte, origin string) []byte {
+	data = bytes.ReplaceAll(data, []byte(site.bundleOrigin+"/"), []byte(origin+"/"))
+	return bytes.ReplaceAll(data, []byte(strings.ReplaceAll(site.bundleOrigin+"/", "/", `\/`)), []byte(strings.ReplaceAll(origin+"/", "/", `\/`)))
 }
 
 func validSitePath(value string) bool {

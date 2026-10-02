@@ -6,7 +6,6 @@ COPY apps/console/ ./
 RUN npm run build
 
 FROM node:24-bookworm-slim AS site
-ARG KUKIE_SITE_URL=https://www.kukie.cn
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /tmp/hugo
@@ -26,7 +25,7 @@ COPY static/ static/
 COPY themes/ themes/
 COPY apps/site/ apps/site/
 COPY scripts/site.mjs scripts/site.mjs
-RUN KUKIE_SITE_URL="$KUKIE_SITE_URL" KUKIE_SITE_OUTPUT=/site node scripts/site.mjs
+RUN KUKIE_SITE_OUTPUT=/site node scripts/site.mjs
 
 FROM golang:1.26-bookworm AS api
 WORKDIR /build
@@ -36,7 +35,6 @@ COPY services/api/ ./
 RUN CGO_ENABLED=1 go build -trimpath -ldflags='-s -w' -o /kukie-api .
 
 FROM debian:bookworm-slim AS runtime
-ARG KUKIE_SITE_URL=https://www.kukie.cn
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl tzdata \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid 10001 kukie && useradd --uid 10001 --gid kukie --no-create-home kukie \
@@ -50,7 +48,7 @@ COPY static/ /app/static/
 COPY LICENSE /app/LICENSE
 ENV KUKIE_REPOSITORY=/app KUKIE_DATA_DIR=/data KUKIE_SITE_DIR=/app/site \
     KUKIE_SITE_ADDR=0.0.0.0:8086 KUKIE_API_ADDR=0.0.0.0:8084 KUKIE_CONSOLE_ADDR=0.0.0.0:8085 \
-    KUKIE_SECURE_COOKIE=1 KUKIE_SITE_URL=$KUKIE_SITE_URL
+    KUKIE_SECURE_COOKIE=1
 USER kukie
 EXPOSE 8084 8085 8086
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

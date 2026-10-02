@@ -3,7 +3,6 @@ import { mkdir, cp, writeFile } from 'node:fs/promises';
 import { resolve, dirname, basename } from 'node:path';
 
 const repository = resolve(import.meta.dirname, '..');
-if (!process.env.KUKIE_SITE_URL) throw new Error('Set KUKIE_SITE_URL to the intended site origin before packaging');
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const release = resolve(repository, process.env.KUKIE_RELEASE_OUTPUT || `.local/releases/kukie-${stamp}`);
 async function run(command, args, cwd = repository, env = process.env) {
@@ -25,6 +24,6 @@ await cp(resolve(repository, 'static'), resolve(release, 'static'), { recursive:
 await cp(resolve(repository, 'deploy/go-site'), resolve(release, 'deploy'), { recursive: true });
 await cp(resolve(repository, 'docs/go-site.md'), resolve(release, 'README.md'));
 await cp(resolve(repository, 'docs'), resolve(release, 'docs'), { recursive: true });
-await writeFile(resolve(release, 'build.json'), JSON.stringify({ built_at: new Date().toISOString(), site_url: process.env.KUKIE_SITE_URL, platform: process.platform, architecture: process.arch }, null, 2) + '\n');
+await writeFile(resolve(release, 'build.json'), JSON.stringify({ built_at: new Date().toISOString(), platform: process.platform, architecture: process.arch }, null, 2) + '\n');
 await run('tar', ['-czf', release + '.tar.gz', '-C', dirname(release), basename(release)]);
 console.log(`Release: ${release}\nArchive: ${release}.tar.gz\nBuilt for this host. No database, credentials, or live binaries were copied.`);

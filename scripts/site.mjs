@@ -7,13 +7,7 @@ const root = resolve(import.meta.dirname, '..');
 const output = resolve(root, process.env.KUKIE_SITE_OUTPUT || '.local/site');
 const temporary = await mkdtemp(join(tmpdir(), 'kukie-site-'));
 const extensions = new Set(['.css', '.js', '.json', '.wasm', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.otf', '.mp4', '.webm', '.ogg', '.mp3']);
-const base = process.env.KUKIE_SITE_URL;
-const args = ['--config', 'hugo.toml,hugo.server.toml', '--destination', temporary, '--minify'];
-if (base) {
-  const origin = new URL(base);
-  if (!['https:', 'http:'].includes(origin.protocol) || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) throw new Error('KUKIE_SITE_URL must be an HTTP(S) origin');
-  args.push('--baseURL', origin.origin + '/');
-}
+const args = ['--config', 'hugo.toml,hugo.server.toml', '--destination', temporary, '--minify', '--baseURL', 'https://kukie.invalid/'];
 try {
   await new Promise((resolveRun, reject) => {
     const child = spawn(process.env.HUGO_BIN || 'hugo', args, { cwd: root, stdio: 'inherit' });

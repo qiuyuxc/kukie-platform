@@ -6,12 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type sitePage struct {
@@ -31,6 +33,9 @@ type sitePage struct {
 }
 
 func (site *blogSite) absolute(path string) string {
+	if strings.HasPrefix(path, site.bundleOrigin+"/") {
+		path = strings.TrimPrefix(path, site.bundleOrigin)
+	}
 	parsed, err := url.Parse(path)
 	if err != nil {
 		return site.manifest.BaseURL + "/"
@@ -59,6 +64,15 @@ func (app *server) siteHandler() http.Handler {
 			http.NotFound(writer, request)
 			return
 		}
+		site := *app.site
+		if site.manifest.BaseURL == "" {
+			origin, err := app.requestOrigin(request)
+			if err != nil {
+				http.Error(writer, "Invalid request host", http.StatusBadRequest)
+				return
+			}
+			site.manifest.BaseURL = origin
+		}
 		path := request.URL.Path
 		if path != "/" && !validSitePath(path) {
 			http.NotFound(writer, request)
@@ -81,27 +95,27 @@ func (app *server) siteHandler() http.Handler {
 			return
 		}
 		if path == "/sitemap.xml" || path == "/index.xml" || path == "/index.json" || path == "/robots.txt" {
-			app.siteIndex(writer, request)
+			app.siteIndex(writer, request, &site)
 			return
 		}
 		if app.site.assets[path] {
-			app.serveSiteFile(writer, request, strings.TrimPrefix(path, "/"), true)
+			app.serveSiteFile(writer, request, strings.TrimPrefix(path, "/"), true, site.manifest.BaseURL)
 			return
 		}
 		if file, exists := app.site.static[path]; exists {
-			app.serveSiteFile(writer, request, file, false)
+			app.serveSiteFile(writer, request, file, false, site.manifest.BaseURL)
 			return
 		}
 		if _, exists := app.site.static[path+"/"]; exists {
 			http.Redirect(writer, request, path+"/", 308)
 			return
 		}
-		page, err := app.resolveSitePage(request)
+		page, err := app.resolveSitePage(request, &site)
 		if errors.Is(err, sql.ErrNoRows) {
 			var slug string
 			err = app.db.QueryRow("SELECT p.slug FROM post_aliases a JOIN posts p ON p.id=a.post_id WHERE a.path=? AND p.status='published'", path).Scan(&slug)
 			if err == nil {
-				http.Redirect(writer, request, app.site.absolute(postPath(slug)), 308)
+				http.Redirect(writer, request, site.absolute(postPath(slug)), 308)
 				return
 			}
 			if errors.Is(err, sql.ErrNoRows) {
@@ -125,7 +139,7 @@ func (app *server) siteHandler() http.Handler {
 	})
 }
 
-func (app *server) serveSiteFile(writer http.ResponseWriter, request *http.Request, name string, asset bool) {
+func (app *server) serveSiteFile(writer http.ResponseWriter, request *http.Request, name string, asset bool, origin string) {
 	file, err := app.site.root.Open(name)
 	if err != nil {
 		app.siteFailure(writer, err)
@@ -139,12 +153,19 @@ func (app *server) serveSiteFile(writer http.ResponseWriter, request *http.Reque
 	}
 	if asset {
 		writer.Header().Set("Cache-Control", "public, max-age=3600")
+	} else if strings.HasSuffix(name, ".html") {
+		data, err := io.ReadAll(file)
+		if err != nil {
+			app.siteFailure(writer, err)
+			return
+		}
+		http.ServeContent(writer, request, name, time.Time{}, bytes.NewReader(app.site.rebaseHTML(data, origin)))
+		return
 	}
 	http.ServeContent(writer, request, name, info.ModTime(), file)
 }
 
-func (app *server) resolveSitePage(request *http.Request) (sitePage, error) {
-	site := app.site
+func (app *server) resolveSitePage(request *http.Request, site *blogSite) (sitePage, error) {
 	page := sitePage{Site: site.manifest, Head: site.postHead, Description: site.manifest.Description, Image: site.absolute(site.manifest.DefaultCover), Kind: "list"}
 	path := request.URL.Path
 	clean := strings.TrimSuffix(path, "/")
@@ -298,7 +319,7 @@ func (app *server) renderSite(writer http.ResponseWriter, request *http.Request,
 	}
 	writer.WriteHeader(http.StatusOK)
 	if request.Method != "HEAD" {
-		_, _ = writer.Write(output.Bytes())
+		_, _ = writer.Write(app.site.rebaseHTML(output.Bytes(), page.Site.BaseURL))
 	}
 }
 

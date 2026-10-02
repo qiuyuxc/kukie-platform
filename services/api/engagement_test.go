@@ -89,6 +89,7 @@ func TestArticleEngagement(test *testing.T) {
 			request := httptest.NewRequest(mutation.method, mutation.path, strings.NewReader(mutation.body))
 			request.AddCookie(&http.Cookie{Name: "kukie_session", Value: reader})
 			request.Header.Set("Origin", "http://localhost:8085")
+			request.Host = "localhost:8085"
 			response := httptest.NewRecorder()
 			fixture.handler.ServeHTTP(response, request)
 			if response.Code != 403 {
